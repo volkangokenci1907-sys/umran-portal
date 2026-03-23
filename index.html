@@ -1,0 +1,3207 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Şirket Paneli</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f0f2f7;
+    --surface: #ffffff;
+    --surface2: #f5f7fb;
+    --surface3: #eef1f8;
+    --border: #dde3ef;
+    --border2: #c8d0e0;
+    --accent: #e8940a;
+    --accent2: #e05252;
+    --accent3: #0d9da3;
+    --accent4: #7c6fd4;
+    --text: #1a2438;
+    --text2: #3a4a62;
+    --muted: #7a8aaa;
+    --gold: #c8911f;
+    --shadow: rgba(30,50,90,0.08);
+    --shadow2: rgba(30,50,90,0.15);
+  }
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* TOP BAR */
+  .topbar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 72px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 12px var(--shadow);
+  }
+
+  .logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    color: var(--gold);
+    letter-spacing: 0.05em;
+  }
+
+  .logo span { color: var(--muted); font-size: 0.8rem; font-family: 'DM Sans', sans-serif; font-weight: 300; display: block; }
+
+  .date-badge {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    color: var(--text2);
+    font-weight: 500;
+  }
+
+  /* NAV TABS */
+  .nav {
+    background: var(--surface);
+    border-bottom: 2px solid var(--border);
+    padding: 0 2rem;
+    display: flex;
+    gap: 0;
+    box-shadow: 0 2px 8px var(--shadow);
+  }
+
+  .nav-btn {
+    padding: 1rem 1.4rem;
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .nav-btn:hover { color: var(--accent3); background: rgba(13,157,163,0.06); border-radius: 6px 6px 0 0; }
+  .nav-btn.active { color: var(--accent3); border-bottom-color: var(--accent3); background: rgba(13,157,163,0.06); border-radius: 6px 6px 0 0; }
+
+  .nav-btn .icon { font-size: 1.1rem; }
+
+  /* MAIN CONTENT */
+  .main { padding: 2rem 2.5rem; max-width: 1280px; margin: 0 auto; }
+
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* Evrensel kart hover efekti */
+  .hover-card {
+    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s !important;
+  }
+  .hover-card:hover {
+    transform: translateY(-3px) !important;
+    box-shadow: 0 10px 28px var(--shadow2) !important;
+    border-color: var(--accent3) !important;
+  }
+  .announcement-card {
+    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s !important;
+  }
+  .announcement-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 28px var(--shadow2) !important;
+    border-color: var(--accent3) !important;
+  }
+
+  /* Nav iyileştirme */
+  .nav-btn {
+    position: relative;
+    transition: color 0.2s, background 0.2s !important;
+  }
+  .nav-btn:hover {
+    background: var(--surface2);
+    border-radius: 6px 6px 0 0;
+  }
+  .nav-btn.active {
+    color: var(--accent3) !important;
+    border-bottom-color: var(--accent3) !important;
+  }
+
+  /* Topbar gölge */
+  .topbar {
+    box-shadow: 0 2px 20px var(--shadow) !important;
+  }
+
+  /* Nav gölge */
+  .nav {
+    box-shadow: 0 2px 10px var(--shadow) !important;
+  }
+
+  /* Genel input focus */
+  .form-input:focus, .form-select:focus, .form-textarea:focus {
+    border-color: var(--accent3) !important;
+    box-shadow: 0 0 0 3px rgba(61,214,204,0.1) !important;
+    outline: none !important;
+  }
+
+  /* Buton iyileştirme */
+  .btn-add {
+    transition: all 0.2s !important;
+    box-shadow: 0 2px 8px rgba(247,170,42,0.2) !important;
+  }
+  .btn-add:hover {
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 16px rgba(247,170,42,0.3) !important;
+  }
+
+  /* Sekme geçiş animasyonu */
+  .section.active {
+    animation: fadeIn 0.25s ease;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--surface2); }
+  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+
+  /* Seçim rengi */
+  ::selection { background: rgba(61,214,204,0.2); color: var(--text); }
+
+  /* SECTION HEADER */
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--border);
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    color: var(--text);
+  }
+
+  .section-title span { color: var(--gold); }
+
+  /* CARD */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  /* ADD BUTTON */
+  .btn-add {
+    background: var(--accent);
+    color: #000;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .btn-add:hover { opacity: 0.85; }
+
+  .btn-danger {
+    background: transparent;
+    color: var(--accent2);
+    border: 1px solid var(--accent2);
+    padding: 0.35rem 0.75rem;
+    border-radius: 6px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.78rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-danger:hover { background: var(--accent2); color: #fff; }
+
+  .btn-edit {
+    background: transparent;
+    color: var(--accent3);
+    border: 1px solid var(--accent3);
+    padding: 0.35rem 0.75rem;
+    border-radius: 6px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.78rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-edit:hover { background: var(--accent3); color: #000; }
+
+  /* ====== YEMEK LİSTESİ ====== */
+  .meal-day-selector {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .day-btn {
+    padding: 0.5rem 1rem;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .day-btn:hover { border-color: var(--accent); color: var(--text); }
+  .day-btn.active { background: var(--accent); color: #000; border-color: var(--accent); font-weight: 600; }
+
+  .meal-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+  }
+
+  .meal-card {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 1.2rem;
+    position: relative;
+    box-shadow: 0 2px 6px var(--shadow);
+    transition: all 0.2s;
+  }
+  .meal-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px var(--shadow2);
+    border-color: var(--accent3);
+  }
+
+  .meal-type-badge {
+    display: inline-block;
+    padding: 0.2rem 0.7rem;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    margin-bottom: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .badge-ogle { background: rgba(232,148,10,0.12); color: #c07a00; border: 1px solid rgba(232,148,10,0.2); }
+  .badge-aksam { background: rgba(13,157,163,0.1); color: var(--accent3); border: 1px solid rgba(13,157,163,0.2); }
+  .badge-kahvalti { background: rgba(224,82,82,0.1); color: var(--accent2); border: 1px solid rgba(224,82,82,0.2); }
+
+  .meal-name {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 0.3rem;
+  }
+
+  .meal-desc {
+    font-size: 0.82rem;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  .meal-actions {
+    display: flex;
+    gap: 0.4rem;
+    margin-top: 0.8rem;
+  }
+
+  /* ====== DOĞUM GÜNÜ ====== */
+  .birthday-list { display: flex; flex-direction: column; gap: 0; }
+
+  .birthday-item {
+    display: flex;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    transition: background 0.15s;
+    gap: 1rem;
+    transition: background 0.15s;
+  }
+
+  .birthday-item:last-child { border-bottom: none; }
+  .birthday-item:hover { background: var(--surface2); }
+
+  .avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .birthday-info { flex: 1; }
+  .birthday-name { font-weight: 600; font-size: 0.95rem; }
+  .birthday-dept { font-size: 0.8rem; color: var(--muted); margin-top: 0.1rem; }
+
+  .birthday-date {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--accent);
+    min-width: 80px;
+    text-align: right;
+  }
+
+  .birthday-today {
+    background: rgba(245,166,35,0.06);
+    border-left: 3px solid var(--accent);
+  }
+
+  .today-tag {
+    background: var(--accent);
+    color: #000;
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 0.15rem 0.5rem;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .birthday-actions { display: flex; gap: 0.4rem; align-items: center; }
+
+  /* ====== DUYURULAR ====== */
+  .announcement-list { display: flex; flex-direction: column; gap: 1rem; }
+
+  .announcement-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.5rem;
+    position: relative;
+  }
+
+  .ann-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 0.8rem; gap: 1rem; }
+  .ann-title { font-size: 1rem; font-weight: 600; color: var(--text); }
+
+  .priority-badge {
+    padding: 0.2rem 0.7rem;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    flex-shrink: 0;
+  }
+
+  .priority-yuksek { background: rgba(224,92,92,0.15); color: var(--accent2); }
+  .priority-orta { background: rgba(245,166,35,0.15); color: var(--accent); }
+  .priority-dusuk { background: rgba(78,205,196,0.15); color: var(--accent3); }
+
+  .ann-body { font-size: 0.88rem; color: var(--muted); line-height: 1.65; }
+
+  .ann-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 1rem;
+    padding-top: 0.8rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .ann-meta { font-size: 0.78rem; color: var(--muted); }
+  .ann-actions { display: flex; gap: 0.4rem; }
+
+  /* ====== MODAL ====== */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+  }
+
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 2rem;
+    width: 100%;
+    max-width: 480px;
+    transform: translateY(20px);
+    transition: transform 0.2s;
+  }
+
+  .modal-overlay.open .modal { transform: translateY(0); }
+
+  .modal-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
+    margin-bottom: 1.5rem;
+    color: var(--gold);
+  }
+
+  .form-group { margin-bottom: 1rem; }
+
+  .form-label {
+    display: block;
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--muted);
+    margin-bottom: 0.4rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .form-input, .form-select, .form-textarea {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.65rem 0.9rem;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .form-input:focus, .form-select:focus, .form-textarea:focus {
+    border-color: var(--accent);
+  }
+
+  .form-textarea { resize: vertical; min-height: 80px; }
+
+  .form-select option { background: var(--surface2); }
+
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+  .modal-actions {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+    justify-content: flex-end;
+  }
+
+  .btn-cancel {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+  }
+
+  .btn-cancel:hover { color: var(--text); border-color: var(--muted); }
+
+  /* ====== HAFTALIK TOPLU GİRİŞ ====== */
+  .weekly-modal .modal { max-width: 860px; max-height: 90vh; overflow-y: auto; }
+
+  .weekly-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+
+  .weekly-day-col {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .weekly-day-header {
+    background: var(--border);
+    padding: 0.6rem 0.75rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-align: center;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .weekly-day-body { padding: 0.6rem; display: flex; flex-direction: column; gap: 0.5rem; }
+
+  .weekly-meal-row label {
+    display: block;
+    font-size: 0.68rem;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.25rem;
+  }
+
+  .weekly-meal-row input {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.4rem 0.6rem;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.8rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .weekly-meal-row input:focus { border-color: var(--accent); }
+  .weekly-meal-row input::placeholder { color: var(--muted); font-size: 0.75rem; }
+
+  .weekly-meal-row input.k { border-left: 2px solid var(--accent2); }
+  .weekly-meal-row input.o { border-left: 2px solid var(--accent); }
+  .weekly-meal-row input.a { border-left: 2px solid var(--accent3); }
+
+  .weekly-legend {
+    display: flex;
+    gap: 1.2rem;
+    margin-bottom: 1rem;
+    font-size: 0.78rem;
+    color: var(--muted);
+  }
+
+  .weekly-legend span { display: flex; align-items: center; gap: 0.4rem; }
+  .legend-dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+
+  .btn-weekly {
+    background: var(--surface2);
+    color: var(--accent3);
+    border: 1px solid var(--accent3);
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .btn-weekly:hover { background: var(--accent3); color: #000; }
+
+  .weekly-clear-btn {
+    background: transparent;
+    color: var(--accent2);
+    border: 1px solid var(--border);
+    padding: 0.35rem 0.9rem;
+    border-radius: 6px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.78rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .weekly-clear-btn:hover { border-color: var(--accent2); }
+
+  /* ====== YAKLAŞAN DOĞUM GÜNLERİ ====== */
+  .upcoming-banner {
+    margin-bottom: 1.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .upcoming-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.9rem 1.2rem;
+    border-radius: 10px;
+    border: 1px solid;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .upcoming-today {
+    background: rgba(245,166,35,0.08);
+    border-color: rgba(245,166,35,0.4);
+  }
+
+  .upcoming-soon {
+    background: rgba(78,205,196,0.06);
+    border-color: rgba(78,205,196,0.25);
+  }
+
+  .upcoming-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+  }
+  .upcoming-today::before { background: var(--accent); }
+  .upcoming-soon::before { background: var(--accent3); }
+
+  .upcoming-avatar {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem; font-weight: 700; flex-shrink: 0;
+  }
+
+  .upcoming-info { flex: 1; }
+  .upcoming-name { font-weight: 600; font-size: 0.92rem; }
+  .upcoming-dept { font-size: 0.78rem; color: var(--muted); margin-top: 0.1rem; }
+
+  .upcoming-tag {
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 0.25rem 0.7rem;
+    border-radius: 20px;
+    white-space: nowrap;
+  }
+  .tag-today { background: var(--accent); color: #000; }
+  .tag-tomorrow { background: rgba(245,166,35,0.2); color: var(--accent); }
+  .tag-soon { background: rgba(78,205,196,0.15); color: var(--accent3); }
+
+  /* EMPTY STATE */
+  .empty-state {
+    text-align: center;
+    padding: 3rem 2rem;
+    color: var(--muted);
+  }
+
+  .empty-state .empty-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+  .empty-state p { font-size: 0.9rem; }
+
+  /* TOAST */
+  .toast {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent3);
+    padding: 0.9rem 1.3rem;
+    border-radius: 10px;
+    font-size: 0.88rem;
+    color: var(--text);
+    z-index: 300;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.3s;
+    pointer-events: none;
+  }
+
+  .toast.show { opacity: 1; transform: translateY(0); }
+
+  /* ===== MOBİL UYUMLULUK ===== */
+  @media (max-width: 768px) {
+
+    /* Topbar */
+    .topbar {
+      padding: 0 0.8rem;
+      height: auto;
+      min-height: 56px;
+      flex-wrap: nowrap;
+      gap: 0.5rem;
+      justify-content: space-between;
+    }
+    .logo { gap: 10px !important; flex-shrink: 0; }
+    .logo img { height: 32px !important; }
+    .logo span[style*="2rem"] { font-size: 1.1rem !important; }
+    .logo span[style*="0.82rem"] { font-size: 0.62rem !important; letter-spacing: 0.15em !important; }
+    .date-badge { display: none; }
+    #btnAdminGiris { padding: 0.3rem 0.7rem !important; font-size: 0.75rem !important; flex-shrink: 0; }
+
+    /* Nav - yatay kaydırmalı */
+    .nav {
+      padding: 0 0.5rem;
+      overflow-x: auto;
+      overflow-y: hidden;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      flex-wrap: nowrap;
+      gap: 0;
+    }
+    .nav::-webkit-scrollbar { display: none; }
+    .nav-btn {
+      padding: 0.8rem 0.9rem;
+      font-size: 0.78rem;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .nav-btn .icon { font-size: 0.95rem; }
+
+    /* Main */
+    .main { padding: 1rem; }
+
+    /* Section header */
+    .section-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.6rem;
+    }
+    .section-title { font-size: 1.4rem !important; }
+
+    /* Ana sayfa widget grid - 1 sütun */
+    #anaSayfaWidgets {
+      grid-template-columns: 1fr !important;
+    }
+    #anaSayfaWidgets > div[style*="span 2"] {
+      grid-column: span 1 !important;
+    }
+
+    /* Hava durumu grid */
+    #havaDurumuGrid {
+      grid-template-columns: 1fr !important;
+      gap: 0.6rem !important;
+    }
+
+    /* Karşılama + saat */
+    #section-anasayfa > div:first-child {
+      flex-direction: column !important;
+      align-items: flex-start !important;
+      gap: 0.3rem !important;
+    }
+    #selamlamaMesaji { font-size: 1.5rem !important; }
+    #saatWidget { font-size: 1.8rem !important; }
+
+    /* Motivasyon kartı */
+    #motivasyonKart { padding: 1rem !important; }
+    #motivasyonSoz { font-size: 0.88rem !important; }
+
+    /* Hakkımızda istatistik grid */
+    #section-hakkimizda > div[style*="repeat(auto-fill,minmax(200px"] {
+      grid-template-columns: repeat(2, 1fr) !important;
+    }
+
+    /* Hakkımızda 2 sütunlu grid */
+    #section-hakkimizda > div[style*="grid-template-columns:1fr 1fr"] {
+      grid-template-columns: 1fr !important;
+    }
+
+    /* Akçakoca 3 sütunlu grid */
+    #section-hakkimizda div[style*="grid-template-columns:repeat(3,1fr)"] {
+      grid-template-columns: 1fr !important;
+    }
+
+    /* Rehber arama kutusu */
+    #rehberSearch { width: 180px !important; }
+
+    /* Galeri masonry */
+    #galeriGrid { columns: 1 !important; }
+
+    /* Etkinlik grid */
+    #etkinlikGrid {
+      grid-template-columns: 1fr !important;
+    }
+
+    /* Favori grid */
+    #favoriGrid {
+      grid-template-columns: 1fr 1fr !important;
+    }
+
+    /* Form row - mobilde alt alta */
+    .form-row {
+      grid-template-columns: 1fr !important;
+    }
+
+    /* Modal */
+    .modal { margin: 1rem !important; padding: 1.5rem !important; }
+
+    /* Day selector */
+    .meal-day-selector {
+      gap: 0.4rem !important;
+    }
+    .day-btn {
+      padding: 0.4rem 0.7rem !important;
+      font-size: 0.78rem !important;
+    }
+
+    /* Kart grid */
+    .meal-grid {
+      grid-template-columns: 1fr !important;
+    }
+
+    /* Doğum günü banner */
+    #birthdayDuyuruBanner > div {
+      padding: 1rem !important;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .nav-btn { padding: 0.7rem 0.7rem; font-size: 0.72rem; }
+    .main { padding: 0.75rem; }
+    #galeriGrid { columns: 1 !important; }
+    #section-hakkimizda > div[style*="repeat(auto-fill,minmax(200px"] {
+      grid-template-columns: 1fr 1fr !important;
+    }
+  }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo" style="display:flex;align-items:center;gap:24px;">
+    <img src="data:image/png;base64,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" alt="Ümran" style="height:52px;width:auto;" />
+    <div style="display:flex;flex-direction:column;line-height:1.1;">
+      <span style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;letter-spacing:0.08em;color:var(--accent3);">ÜMRAN</span>
+      <span style="font-family:'DM Sans',sans-serif;font-size:0.82rem;font-weight:600;letter-spacing:0.28em;color:var(--muted);text-transform:uppercase;">PORTAL</span>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;gap:1rem">
+    <div class="date-badge" id="currentDate"></div>
+    <div style="position:relative;cursor:pointer" onclick="showSection('duyuru')" title="Doğum günü bildirimleri">
+      <span style="font-size:1.3rem">🔔</span>
+      <span id="bdNotifBadge" style="display:none;position:absolute;top:-4px;right:-4px;background:var(--accent2);color:#fff;font-size:0.6rem;font-weight:700;min-width:16px;height:16px;border-radius:8px;display:none;align-items:center;justify-content:center;padding:0 3px;line-height:1"></span>
+    </div>
+    <button id="btnAdminGiris" onclick="toggleAdminPanel()" style="background:var(--surface2);border:1.5px solid var(--border);color:var(--text2);padding:0.4rem 1rem;border-radius:20px;font-size:0.82rem;cursor:pointer;font-family:'DM Sans',sans-serif;display:flex;align-items:center;gap:0.4rem;transition:all 0.2s;font-weight:500;">
+      🔐 Giriş
+    </button>
+  </div>
+</div>
+
+<nav class="nav">
+  <button class="nav-btn active" onclick="showSection('anasayfa')" id="tab-anasayfa">
+    <span class="icon">🏠</span> Ana Sayfa
+  </button>
+  <button class="nav-btn" onclick="showSection('yemek')" id="tab-yemek">
+    <span class="icon">🍽️</span> Yemek Listesi
+  </button>
+  <button class="nav-btn" onclick="showSection('duyuru')" id="tab-duyuru">
+    <span class="icon">📢</span> Duyurular
+  </button>
+  <button class="nav-btn" onclick="showSection('etkinlik')" id="tab-etkinlik">
+    <span class="icon">🎉</span> Etkinlikler
+  </button>
+  <button class="nav-btn" onclick="showSection('rehber')" id="tab-rehber">
+    <span class="icon">📋</span> Dahili Rehber
+  </button>
+  <button class="nav-btn" onclick="showSection('favoriler')" id="tab-favoriler">
+    <span class="icon">🔗</span> Favori Siteler
+  </button>
+  <button class="nav-btn" onclick="showSection('hakkimizda')" id="tab-hakkimizda">
+    <span class="icon">🏭</span> Hakkımızda
+  </button>
+  <button class="nav-btn" onclick="showSection('galeri')" id="tab-galeri">
+    <span class="icon">🖼️</span> Galeri
+  </button>
+</nav>
+
+<main class="main">
+
+  <!-- ===== ANA SAYFA ===== -->
+  <section class="section active" id="section-anasayfa">
+
+    <!-- Karşılama + Saat -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;gap:1rem;flex-wrap:wrap;background:linear-gradient(135deg,rgba(13,157,163,0.06),rgba(124,111,212,0.04));border:1.5px solid rgba(13,157,163,0.12);border-radius:14px;padding:1.2rem 1.5rem;">
+      <div>
+        <div id="selamlamaMesaji" style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;color:var(--text);line-height:1.2;"></div>
+        <div id="tarihMesaji" style="font-size:0.9rem;color:var(--muted);margin-top:0.3rem;"></div>
+      </div>
+      <div id="saatWidget" style="font-family:'Playfair Display',serif;font-size:2.5rem;font-weight:700;color:var(--accent3);letter-spacing:0.05em;flex-shrink:0;"></div>
+    </div>
+
+    <!-- Hava Durumu -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem;" id="havaDurumuGrid">
+      <div id="hava-merkez" style="background:var(--surface2);border:1px solid var(--border);border-top:3px solid var(--accent3);border-radius:12px;padding:1.2rem;display:flex;align-items:center;gap:1rem;transition:all 0.2s;box-shadow:0 2px 8px var(--shadow);" >
+        <div style="font-size:2.5rem;" id="hava-merkez-ikon">⏳</div>
+        <div>
+          <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text2);">🏢 Merkez (İstanbul)</div>
+          <div id="hava-merkez-text" style="font-size:1.4rem;font-weight:700;color:var(--text);margin-top:0.2rem;">Yükleniyor...</div>
+          <div id="hava-merkez-desc" style="font-size:0.8rem;color:var(--muted);"></div>
+        </div>
+      </div>
+      <div id="hava-fabrika" style="background:var(--surface2);border:1px solid var(--border);border-top:3px solid var(--accent);border-radius:12px;padding:1.2rem;display:flex;align-items:center;gap:1rem;transition:all 0.2s;box-shadow:0 2px 8px var(--shadow);" >
+        <div style="font-size:2.5rem;" id="hava-fabrika-ikon">⏳</div>
+        <div>
+          <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text2);">🏭 Fabrika (Akçakoca)</div>
+          <div id="hava-fabrika-text" style="font-size:1.4rem;font-weight:700;color:var(--text);margin-top:0.2rem;">Yükleniyor...</div>
+          <div id="hava-fabrika-desc" style="font-size:0.8rem;color:var(--muted);"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Motivasyon Sözü -->
+    <div id="motivasyonKart" class="hover-card" style="background:linear-gradient(135deg,rgba(61,214,204,0.08),rgba(167,139,250,0.08));border:1px solid rgba(61,214,204,0.2);border-left:4px solid var(--accent3);border-radius:12px;padding:1.3rem 1.5rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:1rem;box-shadow:0 4px 20px rgba(61,214,204,0.05);">
+      <span style="font-size:1.8rem;flex-shrink:0;">💬</span>
+      <div>
+        <div id="motivasyonSoz" style="font-family:'Playfair Display',serif;font-size:1rem;color:var(--text);line-height:1.6;font-style:italic;"></div>
+        <div id="motivasyonYazar" style="font-size:0.78rem;color:var(--muted);margin-top:0.4rem;"></div>
+      </div>
+    </div>
+
+    <!-- Widget Grid -->
+    <div id="anaSayfaWidgets" style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;">
+
+      <!-- Bugünün Yemeği -->
+      <div class="hover-card" style="background:var(--surface);border:1.5px solid var(--border);border-radius:12px;padding:1.2rem;box-shadow:0 2px 8px var(--shadow);">
+        <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.8rem;">
+          <span style="font-size:1.1rem;">🍽️</span>
+          <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text2);">Bugünün Yemeği</div>
+        </div>
+        <div id="widget-yemek" style="font-size:0.85rem;color:var(--text);line-height:1.7;">Yükleniyor...</div>
+        <button onclick="showSection('yemek')" style="margin-top:0.8rem;font-size:0.75rem;color:var(--accent3);background:none;border:none;cursor:pointer;padding:0;font-family:'DM Sans',sans-serif;">Tümünü gör →</button>
+      </div>
+
+      <!-- Doğum Günleri -->
+      <div class="hover-card" style="background:var(--surface);border:1.5px solid var(--border);border-radius:12px;padding:1.2rem;box-shadow:0 2px 8px var(--shadow);">
+        <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.8rem;">
+          <span style="font-size:1.1rem;">🎂</span>
+          <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text2);">Doğum Günleri</div>
+        </div>
+        <div id="widget-dogum" style="font-size:0.85rem;color:var(--text);line-height:1.7;">Yükleniyor...</div>
+        <button onclick="showSection('duyuru')" style="margin-top:0.8rem;font-size:0.75rem;color:var(--accent3);background:none;border:none;cursor:pointer;padding:0;font-family:'DM Sans',sans-serif;">Duyurulara git →</button>
+      </div>
+
+      <!-- Son Duyuru -->
+      <div class="hover-card" style="background:var(--surface);border:1.5px solid var(--border);border-radius:12px;padding:1.2rem;box-shadow:0 2px 8px var(--shadow);">
+        <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.8rem;">
+          <span style="font-size:1.1rem;">📢</span>
+          <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text2);">Son Duyuru</div>
+        </div>
+        <div id="widget-duyuru" style="font-size:0.85rem;color:var(--text);line-height:1.7;">Yükleniyor...</div>
+        <button onclick="showSection('duyuru')" style="margin-top:0.8rem;font-size:0.75rem;color:var(--accent3);background:none;border:none;cursor:pointer;padding:0;font-family:'DM Sans',sans-serif;">Tümünü gör →</button>
+      </div>
+
+      <!-- Yaklaşan Etkinlik -->
+      <div class="hover-card" style="background:var(--surface);border:1.5px solid var(--border);border-radius:12px;padding:1.2rem;box-shadow:0 2px 8px var(--shadow);">
+        <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.8rem;">
+          <span style="font-size:1.1rem;">🎉</span>
+          <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text2);">Yaklaşan Etkinlik</div>
+        </div>
+        <div id="widget-etkinlik" style="font-size:0.85rem;color:var(--text);line-height:1.7;">Yükleniyor...</div>
+        <button onclick="showSection('etkinlik')" style="margin-top:0.8rem;font-size:0.75rem;color:var(--accent3);background:none;border:none;cursor:pointer;padding:0;font-family:'DM Sans',sans-serif;">Tümünü gör →</button>
+      </div>
+
+      <!-- Sık Kullanılan Siteler -->
+      <div class="hover-card" style="background:var(--surface);border:1.5px solid var(--border);border-radius:12px;padding:1.2rem;grid-column:span 2;box-shadow:0 2px 8px var(--shadow);">
+        <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.8rem;">
+          <span style="font-size:1.1rem;">🔗</span>
+          <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text2);">Hızlı Erişim</div>
+        </div>
+        <div id="widget-favoriler" style="display:flex;flex-wrap:wrap;gap:0.5rem;">Yükleniyor...</div>
+        <button onclick="showSection('favoriler')" style="margin-top:0.8rem;font-size:0.75rem;color:var(--accent3);background:none;border:none;cursor:pointer;padding:0;font-family:'DM Sans',sans-serif;">Tümünü gör →</button>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ===== YEMEK ===== -->
+  <section class="section" id="section-yemek">
+    <div class="section-header">
+      <h1 class="section-title">Günlük <span>Yemek Listesi</span></h1>
+      <div style="display:flex;gap:0.6rem;align-items:center">
+        <label id="btnWordImport" class="btn-weekly" style="cursor:pointer;display:none;">
+          📂 Word Dosyası Yükle
+          <input type="file" id="wordFileInput" accept=".docx" style="display:none" onchange="importWordFile(event)">
+        </label>
+        <button id="btnYemekEkle" class="btn-add" onclick="openModal('yemek')" style="display:none;">+ Tekli Ekle</button>
+      </div>
+    </div>
+
+    <div class="meal-day-selector" id="daySelector"></div>
+
+    <div id="weekBanner" style="background:rgba(78,205,196,0.08); border:1px solid rgba(78,205,196,0.25); border-radius:10px; padding:0.7rem 1.2rem; margin-bottom:1rem; align-items:center; justify-content:space-between; gap:1rem;">
+      <div style="font-size:0.85rem; color:var(--accent3)">
+        <strong>📋 Yüklenen Liste:</strong> <span id="weekBannerText"></span>
+      </div>
+      <button id="btnListeTemizle" class="btn-danger" onclick="clearImportedMeals()" style="font-size:0.75rem;padding:0.25rem 0.7rem;display:none;">🗑️ Listeyi Temizle</button>
+    </div>
+
+    <div class="card">
+      <div class="meal-grid" id="mealGrid" style="padding:1rem;">
+        <div class="empty-state">
+          <div class="empty-icon">🍽️</div>
+          <p>Bu gün için yemek eklenmemiş.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== DOĞUM GÜNÜ ===== -->
+  <!-- ===== DUYURU ===== -->
+  <section class="section" id="section-duyuru">
+    <div class="section-header">
+      <h1 class="section-title">Duyuru <span>Panosu</span></h1>
+      <button class="btn-add" id="btnDuyuruEkle" onclick="openModal('duyuru')" style="display:none;">+ Duyuru Ekle</button>
+    </div>
+    <!-- Doğum günü banner -->
+    <div id="birthdayDuyuruBanner"></div>
+    <div class="announcement-list" id="announcementList">
+      <div class="empty-state card" style="padding:3rem">
+        <div class="empty-icon">📢</div>
+        <p>Henüz duyuru eklenmemiş.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== ETKİNLİK ===== -->
+  <section class="section" id="section-etkinlik">
+    <div class="section-header">
+      <h1 class="section-title">Etkinlik <span>Takvimi</span></h1>
+      <button class="btn-add" id="btnEtkinlikEkle" onclick="openModal('etkinlik')" style="display:none;">+ Etkinlik Ekle</button>
+    </div>
+    <div id="etkinlikGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.2rem;"></div>
+  </section>
+
+  <!-- ===== DAHİLİ REHBER ===== -->
+  <section class="section" id="section-rehber">
+    <div class="section-header">
+      <h1 class="section-title">Dahili <span>Rehber</span></h1>
+      <div style="display:flex;gap:0.6rem;align-items:center;">
+        <input id="rehberSearch" type="text" placeholder="🔍  Ad, departman veya numara ara..."
+          oninput="filterRehber()"
+          style="background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:0.5rem 1rem;border-radius:20px;font-size:0.85rem;font-family:'DM Sans',sans-serif;width:280px;outline:none;">
+        <button class="btn-add" id="btnRehberEkle" onclick="openModal('rehber')" style="display:none;">+ Kişi Ekle</button>
+      </div>
+    </div>
+    <div style="display:flex;gap:0;margin-bottom:1.5rem;border-bottom:2px solid var(--border);">
+      <button id="rtab-merkez" onclick="selectRehberTab('merkez')"
+        style="padding:0.6rem 1.5rem;background:none;border:none;border-bottom:3px solid var(--accent3);color:var(--accent3);font-family:'DM Sans',sans-serif;font-size:0.9rem;font-weight:600;cursor:pointer;margin-bottom:-2px;transition:all 0.2s;">
+        🏢 Merkez
+      </button>
+      <button id="rtab-fabrika" onclick="selectRehberTab('fabrika')"
+        style="padding:0.6rem 1.5rem;background:none;border:none;border-bottom:3px solid transparent;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:0.9rem;font-weight:600;cursor:pointer;margin-bottom:-2px;transition:all 0.2s;">
+        🏭 Fabrika
+      </button>
+      <button id="rtab-tumu" onclick="selectRehberTab('tumu')"
+        style="padding:0.6rem 1.5rem;background:none;border:none;border-bottom:3px solid transparent;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:0.9rem;font-weight:600;cursor:pointer;margin-bottom:-2px;transition:all 0.2s;">
+        👥 Tümü
+      </button>
+    </div>
+    <div id="rehberGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:0.8rem;"></div>
+  </section>
+
+  <!-- ===== FAVORİ SİTELER ===== -->
+  <section class="section" id="section-favoriler">
+    <div class="section-header">
+      <h1 class="section-title">Favori <span>Siteler</span></h1>
+      <button class="btn-add" id="btnFavoriEkle" onclick="openModal('favori')" style="display:none;">+ Site Ekle</button>
+    </div>
+    <div id="favoriGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:1rem;"></div>
+  </section>
+
+  <!-- ===== HAKKIMIZDA ===== -->
+  <section class="section" id="section-hakkimizda">
+    <div class="section-header">
+      <h1 class="section-title">Şirket <span>Hakkında</span></h1>
+    </div>
+
+    <!-- Üst istatistik kartları -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem;margin-bottom:2rem;">
+      <div style="background:var(--surface);border:1.5px solid var(--border);border-top:4px solid var(--accent3);border-radius:12px;padding:1.5rem;text-align:center;box-shadow:0 2px 8px var(--shadow);">
+        <div style="font-size:2rem;font-weight:800;color:var(--accent3);font-family:'Playfair Display',serif;">750.000</div>
+        <div style="font-size:0.8rem;color:var(--muted);margin-top:0.3rem;text-transform:uppercase;letter-spacing:0.05em;">Ton/Yıl Üretim</div>
+      </div>
+      <div style="background:var(--surface);border:1.5px solid var(--border);border-top:4px solid var(--accent);border-radius:12px;padding:1.5rem;text-align:center;box-shadow:0 2px 8px var(--shadow);">
+        <div style="font-size:2rem;font-weight:800;color:var(--accent);font-family:'Playfair Display',serif;">7</div>
+        <div style="font-size:0.8rem;color:var(--muted);margin-top:0.3rem;text-transform:uppercase;letter-spacing:0.05em;">Üretim Hattı</div>
+      </div>
+      <div style="background:var(--surface);border:1.5px solid var(--border);border-top:4px solid var(--accent2);border-radius:12px;padding:1.5rem;text-align:center;box-shadow:0 2px 8px var(--shadow);">
+        <div style="font-size:2rem;font-weight:800;color:var(--accent2);font-family:'Playfair Display',serif;">110.000</div>
+        <div style="font-size:0.8rem;color:var(--muted);margin-top:0.3rem;text-transform:uppercase;letter-spacing:0.05em;">m² Kapalı Alan</div>
+      </div>
+      <div style="background:var(--surface);border:1.5px solid var(--border);border-top:4px solid var(--accent4);border-radius:12px;padding:1.5rem;text-align:center;box-shadow:0 2px 8px var(--shadow);">
+        <div style="font-size:2rem;font-weight:800;color:#a78bfa;font-family:'Playfair Display',serif;">1000+</div>
+        <div style="font-size:0.8rem;color:var(--muted);margin-top:0.3rem;text-transform:uppercase;letter-spacing:0.05em;">Çalışan</div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;">
+
+      <!-- Kuruluşumuz -->
+      <div style="background:var(--surface);border:1.5px solid var(--border);border-radius:12px;padding:1.8rem;box-shadow:0 2px 8px var(--shadow);">
+        <div style="display:flex;align-items:center;gap:0.7rem;margin-bottom:1.2rem;">
+          <span style="font-size:1.5rem;">🏭</span>
+          <h2 style="font-family:'Playfair Display',serif;font-size:1.3rem;color:var(--accent3);margin:0;">Kuruluşumuz</h2>
+        </div>
+        <p style="font-size:0.88rem;color:var(--text);line-height:1.8;margin-bottom:1rem;">
+          Ümran, tüm dünya genelinde müşterilerine hizmet götüren, kalitesi ile tanınmış bir <strong style="color:var(--accent3)">çelik hat borusu üreticisidir.</strong> Kalite, deneyim, lojistik ve finansal yeterlilik açısından en yüksek standartları talep eden projelerde ürün tedariğinde uzmanlaşmıştır.
+        </p>
+        <p style="font-size:0.88rem;color:var(--text);line-height:1.8;margin-bottom:1rem;">
+          Yıllar boyunca edindiği deneyim ve müşterilerine değer katmayı hedefleyen politikası ile Ümran, tipik boru tedarikçisi rolünü aşmış; <strong style="color:var(--accent)">proje ortağı</strong> rolünü üstlenmiştir.
+        </p>
+        <div style="border-top:1px solid var(--border);padding-top:1rem;margin-top:0.5rem;">
+          <div style="font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);margin-bottom:0.7rem;">Ürün Grupları</div>
+          <div style="display:flex;flex-direction:column;gap:0.4rem;">
+            <div style="display:flex;align-items:center;gap:0.5rem;font-size:0.84rem;color:var(--text);">
+              <span style="color:var(--accent3);">▸</span> Boyuna tozaltı ark kaynaklı çelik hat boruları
+            </div>
+            <div style="display:flex;align-items:center;gap:0.5rem;font-size:0.84rem;color:var(--text);">
+              <span style="color:var(--accent3);">▸</span> Spiral tozaltı ark kaynaklı çelik hat boruları
+            </div>
+            <div style="display:flex;align-items:center;gap:0.5rem;font-size:0.84rem;color:var(--text);">
+              <span style="color:var(--accent3);">▸</span> Yüksek frekans kaynaklı çelik hat boruları
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Misyon & Vizyon -->
+      <div style="display:flex;flex-direction:column;gap:1.5rem;">
+
+        <!-- Misyon -->
+        <div style="background:var(--surface);border:1.5px solid var(--border);border-left:4px solid var(--accent3);border-radius:12px;padding:1.5rem;box-shadow:0 2px 8px var(--shadow);">
+          <div style="display:flex;align-items:center;gap:0.7rem;margin-bottom:1rem;">
+            <span style="font-size:1.3rem;">🎯</span>
+            <h2 style="font-family:'Playfair Display',serif;font-size:1.2rem;color:var(--accent3);margin:0;">Misyonumuz</h2>
+          </div>
+          <p style="font-size:0.88rem;color:var(--text);line-height:1.8;margin:0;">
+            Nitelikli, ekonomik ve kurumsal teknik birikimimiz ile müşterilerimize etkin çözümler sunan kuruluş olmak. Taahhüt ettiğimiz tüm projeleri, beklentilerin üstünde deneyimlere dayalı en uygun maliyet ve yüksek kalite ile <strong style="color:var(--accent3)">zamanında ve eksiksiz tamamlamak.</strong>
+          </p>
+        </div>
+
+        <!-- Vizyon -->
+        <div style="background:var(--surface);border:1.5px solid var(--border);border-left:4px solid var(--accent);border-radius:12px;padding:1.5rem;box-shadow:0 2px 8px var(--shadow);">
+          <div style="display:flex;align-items:center;gap:0.7rem;margin-bottom:1rem;">
+            <span style="font-size:1.3rem;">🚀</span>
+            <h2 style="font-family:'Playfair Display',serif;font-size:1.2rem;color:var(--accent);margin:0;">Vizyonumuz</h2>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:0.5rem;">
+            <div style="display:flex;align-items:flex-start;gap:0.5rem;font-size:0.84rem;color:var(--text);">
+              <span style="color:var(--accent);margin-top:0.1rem;flex-shrink:0;">✓</span>
+              <span>Sürekli büyümeyi hedefleyen, en doğru ve güvenilir firma olarak anılmak</span>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:0.5rem;font-size:0.84rem;color:var(--text);">
+              <span style="color:var(--accent);margin-top:0.1rem;flex-shrink:0;">✓</span>
+              <span>Farklılıklar yaratarak kalıcı üstünlükler sağlamak</span>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:0.5rem;font-size:0.84rem;color:var(--text);">
+              <span style="color:var(--accent);margin-top:0.1rem;flex-shrink:0;">✓</span>
+              <span>Öncelikle müşteri odaklılık ve yenilikçilik</span>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:0.5rem;font-size:0.84rem;color:var(--text);">
+              <span style="color:var(--accent);margin-top:0.1rem;flex-shrink:0;">✓</span>
+              <span>Kalite istikrarı ile rekabet avantajını korumak</span>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:0.5rem;font-size:0.84rem;color:var(--text);">
+              <span style="color:var(--accent);margin-top:0.1rem;flex-shrink:0;">✓</span>
+              <span>İş güvenliği ilkelerine bağlı, zamanında teslimat</span>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:0.5rem;font-size:0.84rem;color:var(--text);">
+              <span style="color:var(--accent);margin-top:0.1rem;flex-shrink:0;">✓</span>
+              <span>Çevre bilinci ile üretim ve sürdürülebilirlik</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Akçakoca Kompleksi -->
+    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:2rem;margin-top:1.5rem;">
+      <div style="display:flex;align-items:center;gap:0.8rem;margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:1px solid var(--border);">
+        <span style="font-size:1.8rem;">🏗️</span>
+        <div>
+          <h2 style="font-family:'Playfair Display',serif;font-size:1.25rem;color:var(--text);margin:0;">Akçakoca Boru Üretim Kompleksi</h2>
+          <div style="font-size:0.78rem;color:var(--muted);margin-top:0.2rem;">550.000 m² arazi · 110.000 m² kapalı alan · 7 üretim hattı</div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;">
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1.2rem;text-align:center;">
+          <div style="font-size:1.5rem;margin-bottom:0.5rem;">⚙️</div>
+          <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text2);margin-bottom:0.4rem;">SRM</div>
+          <div style="font-size:0.9rem;color:var(--text);font-weight:600;">3½ inç'e kadar</div>
+          <div style="font-size:0.78rem;color:var(--muted);margin-top:0.2rem;">Spiral Kaynaklı</div>
+        </div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1.2rem;text-align:center;">
+          <div style="font-size:1.5rem;margin-bottom:0.5rem;">⚡</div>
+          <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text2);margin-bottom:0.4rem;">HFI</div>
+          <div style="font-size:0.9rem;color:var(--text);font-weight:600;">16 inç'e kadar</div>
+          <div style="font-size:0.78rem;color:var(--muted);margin-top:0.2rem;">Yüksek Frekans Kaynaklı</div>
+        </div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1.2rem;text-align:center;">
+          <div style="font-size:1.5rem;margin-bottom:0.5rem;">🔩</div>
+          <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text2);margin-bottom:0.4rem;">SAW</div>
+          <div style="font-size:0.9rem;color:var(--text);font-weight:600;">42" boyuna · 140" spiral</div>
+          <div style="font-size:0.78rem;color:var(--muted);margin-top:0.2rem;">Tozaltı Ark Kaynaklı</div>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ===== GALERİ ===== -->
+  <section class="section" id="section-galeri">
+    <div class="section-header">
+      <h1 class="section-title">Şirket <span>Galerisi</span></h1>
+      <button class="btn-add" id="btnGaleriEkle" onclick="openModal('galeri')" style="display:none;">+ Görsel Ekle</button>
+    </div>
+
+    <!-- Kategori filtreleri -->
+    <div id="galeriFiltreler" style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:1.5rem;"></div>
+
+    <!-- Masonry grid -->
+    <div id="galeriGrid" style="columns:3;gap:1rem;"></div>
+  </section>
+
+  <!-- Lightbox -->
+  <div id="lightbox" onclick="closeLightbox()" style="display:none;position:fixed;inset:0;background:rgba(20,30,50,0.88);z-index:1000;align-items:center;justify-content:center;cursor:pointer;">
+    <div style="position:relative;max-width:90vw;max-height:90vh;">
+      <img id="lightboxImg" src="" style="max-width:90vw;max-height:85vh;object-fit:contain;border-radius:8px;box-shadow:0 20px 60px rgba(0,0,0,0.5);">
+      <div id="lightboxCaption" style="text-align:center;color:#fff;margin-top:0.8rem;font-size:0.9rem;font-family:'DM Sans',sans-serif;"></div>
+      <button onclick="closeLightbox()" style="position:absolute;top:-2rem;right:0;background:none;border:none;color:#fff;font-size:1.5rem;cursor:pointer;padding:0.5rem;">✕</button>
+    </div>
+  </div>
+
+</main>
+
+
+<!-- ===== MODAL ===== -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModalOnOverlay(event)">
+  <div class="modal" id="modal">
+    <h2 class="modal-title" id="modalTitle">Ekle</h2>
+    <div id="modalBody"></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">İptal</button>
+      <button class="btn-add" onclick="saveItem()">💾 Kaydet</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== ADMIN GİRİŞ PANEL ===== -->
+<div class="modal-overlay" id="adminPanelOverlay" onclick="closeAdminPanelOnOverlay(event)" style="opacity:0;pointer-events:none;backdrop-filter:blur(4px);">
+  <div class="modal" style="max-width:420px;" id="adminPanelModal">
+    <h2 class="modal-title" id="adminPanelTitle">🔐 Admin Girişi</h2>
+    <div id="adminPanelBody"></div>
+    <div class="modal-actions" id="adminPanelActions"></div>
+  </div>
+</div>
+
+<!-- ===== IMPORT LOADING ===== -->
+<div class="modal-overlay" id="importLoadingOverlay" style="pointer-events:none;opacity:0;transition:opacity 0.2s;">
+  <div class="modal" style="max-width:340px;text-align:center;padding:2.5rem 2rem;">
+    <div style="font-size:2.5rem;margin-bottom:1rem">⏳</div>
+    <div style="font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--gold);margin-bottom:0.5rem">Dosya Okunuyor...</div>
+    <div style="font-size:0.85rem;color:var(--muted)" id="importStatus">Lütfen bekleyin.</div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+<div id="toast" style="position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(20px);background:var(--text);border:1px solid transparent;color:var(--surface);padding:0.7rem 1.5rem;border-radius:30px;font-size:0.88rem;font-family:'DM Sans',sans-serif;opacity:0;transition:all 0.3s;z-index:9999;pointer-events:none;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,0.4);"></div>
+
+<script>
+// ===== STATE =====
+const DAYS = ['Pazartesi','Salı','Çarşamba','Perşembe','Cuma','Cumartesi','Pazar'];
+let state = {
+  meals: [],        // {id, day, type, name, desc}
+  birthdays: [],    // {id, name, dept, date, color}
+  announcements:[], // {id, title, body, priority, author, createdAt}
+  etkinlikler: [],  // {id, title, date, time, desc, color}
+  rehber: [],       // {id, name, dept, unite, dahili}
+  favoriler: [],    // {id, baslik, url, ikon, kategori, sira}
+  galeri: [],       // {id, baslik, url, kategori, aciklama}
+  galeriKategori: 'Tümü',
+  rehberTab: 'merkez', // merkez | fabrika | tumu
+  activeDay: DAYS[new Date().getDay()-1] || DAYS[0],
+  editId: null,
+  modalType: null,
+  adminLoggedIn: false,
+  adminUser: null
+};
+
+// ===== SUPABASE =====
+const SUPABASE_URL = 'https://jlzfhpoqyufctjqrncuk.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpsemZocG9xeXVmY3RqcXJuY3VrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM0NDM5NzgsImV4cCI6MjA4OTAxOTk3OH0.xV3pJsnbtVibVD94UzTZDG59b3TXm8ufs0iJl-VdNGc';
+const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// Yükleme göstergesi
+function setLoading(show) {
+  const sections = document.querySelectorAll('.section.active .section-header');
+  // sadece console'a yaz, UI'yi bozmayalım
+}
+
+// ===== SUPABASE API FONKSİYONLARI =====
+
+// Duyurular
+async function sbGetDuyurular() {
+  const { data, error } = await db.from('duyurular').select('*').order('created_at', { ascending: false });
+  if (error) { console.error('Duyuru yükleme hatası:', error); return []; }
+  return data.map(d => ({ id: String(d.id), title: d.baslik, body: d.detay, priority: d.oncelik, author: d.yayimlayan, createdAt: new Date(d.created_at).getTime() }));
+}
+
+async function sbSaveDuyuru(item, editId) {
+  const row = { baslik: item.title, detay: item.body, oncelik: item.priority, yayimlayan: item.author };
+  if (editId) {
+    const { error } = await db.from('duyurular').update(row).eq('id', editId);
+    if (error) throw error;
+  } else {
+    const { error } = await db.from('duyurular').insert(row);
+    if (error) throw error;
+  }
+}
+
+async function sbDeleteDuyuru(id) {
+  const { error } = await db.from('duyurular').delete().eq('id', id);
+  if (error) throw error;
+}
+
+// Etkinlikler
+async function sbGetEtkinlikler() {
+  const { data, error } = await db.from('etkinlikler').select('*').order('tarih', { ascending: true });
+  if (error) { console.error('Etkinlik yükleme hatası:', error); return []; }
+  return data.map(e => ({ id: String(e.id), title: e.baslik, date: e.tarih, time: e.saat||'', desc: e.aciklama||'', color: e.renk||'#4ecdc4' }));
+}
+
+async function sbSaveEtkinlik(item, editId) {
+  const row = { baslik: item.title, tarih: item.date, saat: item.time||null, aciklama: item.desc, renk: item.color };
+  if (editId) {
+    const { error } = await db.from('etkinlikler').update(row).eq('id', editId);
+    if (error) throw error;
+  } else {
+    const { error } = await db.from('etkinlikler').insert(row);
+    if (error) throw error;
+  }
+}
+
+async function sbDeleteEtkinlik(id) {
+  const { error } = await db.from('etkinlikler').delete().eq('id', id);
+  if (error) throw error;
+}
+
+// Doğum günleri
+async function sbGetDogumGunleri() {
+  const { data, error } = await db.from('dogum_gunleri').select('*').order('ad_soyad');
+  if (error) { console.error('Doğum günü yükleme hatası:', error); return []; }
+  return data.map(b => ({ id: String(b.id), name: b.ad_soyad, dept: b.departman||'', date: b.tarih, color: b.renk||'#4ecdc4', dogum_yili: b.dogum_yili||null }));
+}
+
+async function sbSaveDogumGunu(item, editId) {
+  const row = { ad_soyad: item.name, departman: item.dept, tarih: item.date, renk: item.color };
+  if (editId) {
+    const { error } = await db.from('dogum_gunleri').update(row).eq('id', editId);
+    if (error) throw error;
+  } else {
+    const { error } = await db.from('dogum_gunleri').insert(row);
+    if (error) throw error;
+  }
+}
+
+async function sbDeleteDogumGunu(id) {
+  const { error } = await db.from('dogum_gunleri').delete().eq('id', id);
+  if (error) throw error;
+}
+
+// Yemekler
+async function sbGetYemekler() {
+  const { data, error } = await db.from('yemek_listesi').select('*').order('created_at');
+  if (error) { console.error('Yemek yükleme hatası:', error); return []; }
+  return data.map(m => ({ id: String(m.id), day: m.gun, type: m.ogun||'ogle', name: m.ad, desc: m.aciklama||'', imported: m.imported||false, order: m.sira||0 }));
+}
+
+async function sbSaveYemek(item, editId) {
+  const row = { gun: item.day, ogun: item.type, ad: item.name, aciklama: item.desc||'', imported: item.imported||false, sira: item.order||0 };
+  if (editId) {
+    const { error } = await db.from('yemek_listesi').update(row).eq('id', editId);
+    if (error) throw error;
+  } else {
+    const { error } = await db.from('yemek_listesi').insert(row);
+    if (error) throw error;
+  }
+}
+
+async function sbDeleteYemek(id) {
+  const { error } = await db.from('yemek_listesi').delete().eq('id', id);
+  if (error) throw error;
+}
+
+// Tüm import edilmiş yemekleri sil (yeni hafta geldiğinde)
+async function sbDeleteImportedYemekler() {
+  const { error } = await db.from('yemek_listesi').delete().eq('imported', true);
+  if (error) throw error;
+}
+
+// Toplu yemek ekle (Word import için)
+async function sbBulkSaveYemekler(items) {
+  const rows = items.map(m => ({ gun: m.day, ogun: m.type, ad: m.name, aciklama: m.desc||'', imported: true, sira: m.order||0 }));
+  const { error } = await db.from('yemek_listesi').insert(rows);
+  if (error) throw error;
+}
+
+// Galeri
+async function sbGetGaleri() {
+  const { data, error } = await db.from('galeri').select('*').order('created_at', { ascending: false });
+  if (error) { console.error('Galeri yükleme hatası:', error); return []; }
+  return data.map(g => ({ id: String(g.id), baslik: g.baslik||'', url: g.url, kategori: g.kategori||'Genel', aciklama: g.aciklama||'' }));
+}
+
+async function sbSaveGaleri(item, editId) {
+  const row = { baslik: item.baslik, url: item.url, kategori: item.kategori||'Genel', aciklama: item.aciklama||'' };
+  if (editId) {
+    const { error } = await db.from('galeri').update(row).eq('id', editId);
+    if (error) throw error;
+  } else {
+    const { error } = await db.from('galeri').insert(row);
+    if (error) throw error;
+  }
+}
+
+async function sbDeleteGaleri(id) {
+  const { error } = await db.from('galeri').delete().eq('id', id);
+  if (error) throw error;
+}
+
+// Favori Siteler
+async function sbGetFavoriler() {
+  const { data, error } = await db.from('favori_siteler').select('*').order('sira');
+  if (error) { console.error('Favori yükleme hatası:', error); return []; }
+  return data.map(f => ({ id: String(f.id), baslik: f.baslik, url: f.url, ikon: f.ikon||'🔗', kategori: f.kategori||'Genel', sira: f.sira||0 }));
+}
+
+async function sbSaveFavori(item, editId) {
+  const row = { baslik: item.baslik, url: item.url, ikon: item.ikon||'🔗', kategori: item.kategori||'Genel', sira: item.sira||0 };
+  if (editId) {
+    const { error } = await db.from('favori_siteler').update(row).eq('id', editId);
+    if (error) throw error;
+  } else {
+    const { error } = await db.from('favori_siteler').insert(row);
+    if (error) throw error;
+  }
+}
+
+async function sbDeleteFavori(id) {
+  const { error } = await db.from('favori_siteler').delete().eq('id', id);
+  if (error) throw error;
+}
+
+// Dahili Rehber
+async function sbGetRehber() {
+  const { data, error } = await db.from('kullanicilar').select('*').order('ad_soyad');
+  if (error) { console.error('Rehber yükleme hatası:', error); return []; }
+  return data.map(k => ({ id: String(k.id), name: k.ad_soyad, dept: k.departman||'', unite: k.unite||'Merkez', dahili: k.merkez_tel||'' }));
+}
+
+async function sbSaveRehber(item, editId) {
+  const row = { ad_soyad: item.name, departman: item.dept, unite: item.unite, merkez_tel: item.dahili };
+  if (editId) {
+    const { error } = await db.from('kullanicilar').update(row).eq('id', editId);
+    if (error) throw error;
+  } else {
+    const { error } = await db.from('kullanicilar').insert(row);
+    if (error) throw error;
+  }
+}
+
+async function sbDeleteRehber(id) {
+  const { error } = await db.from('kullanicilar').delete().eq('id', id);
+  if (error) throw error;
+}
+
+// Admin kullanıcıları
+async function sbGetAdmins() {
+  const { data, error } = await db.from('admin_kullanicilar').select('kullanici_adi, sifre_hash, rol');
+  if (error) { console.error('Admin yükleme hatası:', error); return []; }
+  return data;
+}
+
+async function sbSaveAdmin(username, passwordHash) {
+  const { error } = await db.from('admin_kullanicilar').insert({ kullanici_adi: username, sifre_hash: passwordHash });
+  if (error) throw error;
+}
+
+async function sbDeleteAdmin(username) {
+  const { error } = await db.from('admin_kullanicilar').delete().eq('kullanici_adi', username);
+  if (error) throw error;
+}
+
+// ===== VERİ YÜKLEME =====
+async function loadAllData() {
+  try {
+    const [duyurular, etkinlikler, dogumGunleri, yemekler, rehber, favoriler, galeri] = await Promise.all([
+      sbGetDuyurular(),
+      sbGetEtkinlikler(),
+      sbGetDogumGunleri(),
+      sbGetYemekler(),
+      sbGetRehber(),
+      sbGetFavoriler(),
+      sbGetGaleri()
+    ]);
+    state.announcements = duyurular;
+    state.etkinlikler = etkinlikler;
+    state.birthdays = dogumGunleri;
+    state.meals = yemekler;
+    state.rehber = rehber;
+    state.favoriler = favoriler;
+    state.galeri = galeri;
+  } catch(e) {
+    console.error('Veri yükleme hatası:', e);
+    showToast('⚠️ Veri yüklenirken hata oluştu!');
+  }
+}
+
+// Load from localStorage
+function loadState() {
+  const s = localStorage.getItem('sirketPaneli');
+  if (s) {
+    const saved = JSON.parse(s);
+    state.meals = saved.meals || [];
+    state.birthdays = saved.birthdays || [];
+    state.announcements = saved.announcements || [];
+    state.etkinlikler = saved.etkinlikler || [];
+    state.importedFileName = saved.importedFileName || null;
+    state.importedDayCount = saved.importedDayCount || 0;
+    state.importedMealCount = saved.importedMealCount || 0;
+  }
+}
+
+function saveState() {
+  // Sadece word import bilgilerini localStorage'da tut
+  localStorage.setItem('sirketPanelImport', JSON.stringify({
+    importedFileName: state.importedFileName || null,
+    importedDayCount: state.importedDayCount || 0,
+    importedMealCount: state.importedMealCount || 0,
+  }));
+}
+
+// ===== UTILS =====
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2); }
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+function initDate() {
+  const d = new Date();
+  const opts = { weekday:'long', year:'numeric', month:'long', day:'numeric' };
+  document.getElementById('currentDate').textContent = d.toLocaleDateString('tr-TR', opts);
+}
+
+// ===== NAVIGATION =====
+function showSection(name) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('section-'+name).classList.add('active');
+  document.getElementById('tab-'+name).classList.add('active');
+  if (name === 'anasayfa') renderAnaSayfa();
+  if (name === 'yemek') renderMeals();
+  if (name === 'duyuru') renderAnnouncements();
+  if (name === 'etkinlik') renderEtkinlikler();
+  if (name === 'rehber') renderRehber();
+  if (name === 'favoriler') renderFavoriler();
+  if (name === 'hakkimizda') {} // statik içerik
+  if (name === 'galeri') renderGaleri();
+}
+
+// ===== MEALS =====
+function renderDaySelector() {
+  const el = document.getElementById('daySelector');
+  el.innerHTML = DAYS.map(d => `
+    <button class="day-btn ${d===state.activeDay?'active':''}" onclick="selectDay('${d}')">${d}</button>
+  `).join('');
+}
+
+function selectDay(day) {
+  state.activeDay = day;
+  renderDaySelector();
+  renderMeals();
+}
+
+function renderMeals() {
+  renderDaySelector();
+  const grid = document.getElementById('mealGrid');
+  const items = state.meals.filter(m => m.day === state.activeDay);
+
+  if (!items.length) {
+    grid.innerHTML = `<div class="empty-state"><div class="empty-icon">🍽️</div><p>Bu gün için yemek eklenmemiş.</p></div>`;
+    return;
+  }
+
+  // Import edilenler ve manuel eklenenleri ayır
+  const imported = items.filter(m => m.imported).sort((a,b) => (a.order||0)-(b.order||0));
+  const manual   = items.filter(m => !m.imported);
+
+  let html = '';
+
+  // Import edilenler varsa liste olarak göster
+  if (imported.length) {
+    html += `
+      <div class="meal-card" style="grid-column: 1 / -1; background:var(--surface2); border-color:rgba(78,205,196,0.2);">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
+          <div style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--accent3)">
+            📋 Günlük Menü
+          </div>
+          <div style="font-size:0.72rem;color:var(--muted)">${state.activeDay}</div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:0.5rem;">
+          ${imported.map((m, i) => `
+            <div style="display:flex;align-items:center;gap:0.6rem;padding:0.55rem 0.75rem;background:var(--surface);border:1px solid var(--border);border-radius:8px;">
+              <span style="color:var(--accent);font-weight:700;font-size:0.75rem;min-width:18px">${i+1}.</span>
+              <span style="font-size:0.87rem;color:var(--text);font-weight:500;flex:1">${m.name}</span>
+              ${state.adminLoggedIn ? `<button onclick="deleteItem('yemek','${m.id}')" title="Sil" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:0.85rem;padding:0;line-height:1;transition:color 0.15s" onmouseover="this.style.color='var(--accent2)'" onmouseout="this.style.color='var(--muted)'">✕</button>` : ''}
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  // Manuel eklenenler
+  manual.forEach(m => {
+    const badge = m.type ? `<div class="meal-type-badge badge-${m.type}">${mealTypeLabel(m.type)}</div>` : '';
+    html += `
+      <div class="meal-card">
+        ${badge}
+        <div class="meal-name">${m.name}</div>
+        ${m.desc ? `<div class="meal-desc">${m.desc}</div>` : ''}
+        <div class="meal-actions" style="display:flex;gap:0.4rem;margin-top:0.8rem;">
+          ${state.adminLoggedIn ? `<button class="btn-edit" onclick="editItem('yemek','${m.id}')">Düzenle</button>
+          <button class="btn-danger" onclick="deleteItem('yemek','${m.id}')">Sil</button>` : ''}
+        </div>
+      </div>
+    `;
+  });
+
+  grid.innerHTML = html;
+  // Admin butonlarını güncelle
+  const listeTemizleBtn = document.getElementById('btnListeTemizle');
+  if (listeTemizleBtn) listeTemizleBtn.style.display = state.adminLoggedIn ? 'inline-flex' : 'none';
+}
+
+function mealTypeLabel(t) {
+  return {ogle:'Öğle Yemeği', aksam:'Akşam Yemeği', kahvalti:'Kahvaltı'}[t] || t;
+}
+
+// ===== BIRTHDAYS =====
+const avatarColors = ['#f5a623','#e05c5c','#4ecdc4','#a78bfa','#34d399','#f472b6'];
+
+function todayStr() {
+  const d = new Date();
+  return `${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}`;
+}
+
+function renderBirthdays() {
+  renderUpcomingBanner();
+  updateNotifBadge();
+
+  const list = document.getElementById('birthdayList');
+  if (!state.birthdays.length) {
+    list.innerHTML = `<div class="empty-state"><div class="empty-icon">🎂</div><p>Henüz çalışan eklenmemiş.</p></div>`;
+    return;
+  }
+  const today = todayStr();
+  const sorted = [...state.birthdays].sort((a,b) => {
+    const da = daysUntilBirthday(a.date);
+    const db = daysUntilBirthday(b.date);
+    return da - db;
+  });
+  list.innerHTML = sorted.map(b => {
+    const isToday = b.date.startsWith(today);
+    const daysLeft = daysUntilBirthday(b.date);
+    const initials = b.name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+
+    let daysTag = '';
+    if (isToday) {
+      daysTag = `<span class="today-tag">🎉 Bugün!</span>`;
+    } else if (daysLeft <= 7) {
+      daysTag = `<span class="today-tag" style="background:rgba(78,205,196,0.2);color:var(--accent3)">${daysLeft} gün sonra</span>`;
+    }
+
+    return `
+      <div class="birthday-item ${isToday ? 'birthday-today' : ''}">
+        <div class="avatar" style="background:${b.color}22;color:${b.color}">${initials}</div>
+        <div class="birthday-info">
+          <div class="birthday-name">${b.name} ${daysTag}</div>
+          <div class="birthday-dept">${b.dept}</div>
+        </div>
+        <div class="birthday-date">${b.date}</div>
+        <div class="birthday-actions">
+          ${state.adminLoggedIn ? `<button class="btn-edit" onclick="editItem('dogumgunu','${b.id}')">Düzenle</button>
+          <button class="btn-danger" onclick="deleteItem('dogumgunu','${b.id}')">Sil</button>` : ''}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ===== ANNOUNCEMENTS =====
+function renderBirthdayDuyuruBanner() {
+  const banner = document.getElementById('birthdayDuyuruBanner');
+  if (!banner) return;
+
+  const today = todayStr();
+  const todayBirths = state.birthdays.filter(b => b.date === today);
+  const upcoming = getUpcoming(7).filter(b => b.daysLeft > 0);
+
+  let html = '';
+
+  // Bugün doğum günü olanlar
+  if (todayBirths.length) {
+    html += `<div style="background:linear-gradient(135deg,rgba(245,166,35,0.15),rgba(78,205,196,0.15));border:1px solid rgba(245,166,35,0.4);border-radius:12px;padding:1.2rem 1.5rem;margin-bottom:1rem;">
+      <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--accent);margin-bottom:0.8rem;">🎂 Bugün Doğum Günü</div>
+      <div style="display:flex;flex-wrap:wrap;gap:0.6rem;">
+        ${todayBirths.map(b => {
+          const yas = null; // Yaş gizlendi
+          return `<div style="display:flex;align-items:center;gap:0.5rem;background:rgba(245,166,35,0.1);border:1px solid rgba(245,166,35,0.3);border-radius:20px;padding:0.35rem 0.9rem;">
+            <span style="font-size:1.1rem;">🎉</span>
+            <span style="font-weight:600;color:var(--text);font-size:0.88rem;">${b.name}</span>
+            ${yas ? `<span style="font-size:0.75rem;color:var(--accent);">${yas} yaş</span>` : ''}
+          </div>`;
+        }).join('')}
+      </div>
+    </div>`;
+  }
+
+  // Yaklaşan doğum günleri (7 gün)
+  if (upcoming.length) {
+    html += `<div style="background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:1rem 1.5rem;margin-bottom:1rem;">
+      <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:0.7rem;">📅 Yaklaşan Doğum Günleri</div>
+      <div style="display:flex;flex-wrap:wrap;gap:0.5rem;">
+        ${upcoming.map(b => `
+          <div style="display:flex;align-items:center;gap:0.5rem;background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:0.3rem 0.8rem;">
+            <span style="font-size:0.85rem;">🎂</span>
+            <span style="font-size:0.85rem;color:var(--text);font-weight:500;">${b.name}</span>
+            <span style="font-size:0.75rem;color:var(--accent3);font-weight:600;">${b.daysLeft} gün</span>
+          </div>`).join('')}
+      </div>
+    </div>`;
+  }
+
+  banner.innerHTML = html;
+}
+
+function renderAnnouncements() {
+  renderBirthdayDuyuruBanner();
+  const list = document.getElementById('announcementList');
+  if (!state.announcements.length) {
+    list.innerHTML = `<div class="empty-state card" style="padding:3rem"><div class="empty-icon">📢</div><p>Henüz duyuru eklenmemiş.</p></div>`;
+    return;
+  }
+  const sorted = [...state.announcements].sort((a,b) => b.createdAt - a.createdAt);
+  list.innerHTML = sorted.map(a => `
+    <div class="announcement-card">
+      <div class="ann-header">
+        <div class="ann-title">${a.title}</div>
+        <span class="priority-badge priority-${a.priority}">${priorityLabel(a.priority)}</span>
+      </div>
+      <div class="ann-body">${a.body}</div>
+      <div class="ann-footer">
+        <div class="ann-meta">✍️ ${a.author} &nbsp;·&nbsp; 📅 ${new Date(a.createdAt).toLocaleDateString('tr-TR')}</div>
+        <div class="ann-actions">
+          ${state.adminLoggedIn ? `<button class="btn-edit" onclick="editItem('duyuru','${a.id}')">Düzenle</button>
+          <button class="btn-danger" onclick="deleteItem('duyuru','${a.id}')">Sil</button>` : ''}
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function priorityLabel(p) {
+  return {yuksek:'🔴 Yüksek', orta:'🟡 Orta', dusuk:'🟢 Düşük'}[p] || p;
+}
+
+// ===== MODAL =====
+function openModal(type, editId = null) {
+  state.modalType = type;
+  state.editId = editId;
+  const overlay = document.getElementById('modalOverlay');
+  const title = document.getElementById('modalTitle');
+  const body = document.getElementById('modalBody');
+
+  if (type === 'yemek') {
+    const item = editId ? state.meals.find(m=>m.id===editId) : null;
+    title.textContent = editId ? 'Yemeği Düzenle' : 'Yemek Ekle';
+    body.innerHTML = `
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Gün</label>
+          <select class="form-select" id="f-day">
+            ${DAYS.map(d=>`<option value="${d}" ${item?.day===d?'selected':''}>${d}</option>`).join('')}
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Öğün</label>
+          <select class="form-select" id="f-type">
+            <option value="kahvalti" ${item?.type==='kahvalti'?'selected':''}>Kahvaltı</option>
+            <option value="ogle" ${(!item||item?.type==='ogle')?'selected':''}>Öğle Yemeği</option>
+            <option value="aksam" ${item?.type==='aksam'?'selected':''}>Akşam Yemeği</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Yemek Adı</label>
+        <input class="form-input" id="f-name" placeholder="örn. Mercimek Çorbası" value="${item?.name||''}">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Açıklama (opsiyonel)</label>
+        <textarea class="form-textarea" id="f-desc" placeholder="Malzemeler, kalori vb.">${item?.desc||''}</textarea>
+      </div>
+    `;
+  }
+
+  if (type === 'dogumgunu') {
+    const item = editId ? state.birthdays.find(b=>b.id===editId) : null;
+    title.textContent = editId ? 'Çalışanı Düzenle' : 'Çalışan Ekle';
+    body.innerHTML = `
+      <div class="form-group">
+        <label class="form-label">Ad Soyad</label>
+        <input class="form-input" id="f-name" placeholder="örn. Ayşe Kaya" value="${item?.name||''}">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Departman</label>
+        <input class="form-input" id="f-dept" placeholder="örn. Yazılım Geliştirme" value="${item?.dept||''}">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Doğum Tarihi (GG.AA)</label>
+        <input class="form-input" id="f-date" placeholder="örn. 15.03" value="${item?.date||''}">
+      </div>
+    `;
+  }
+
+  if (type === 'duyuru') {
+    const item = editId ? state.announcements.find(a=>a.id===editId) : null;
+    title.textContent = editId ? 'Duyuruyu Düzenle' : 'Duyuru Ekle';
+    body.innerHTML = `
+      <div class="form-group">
+        <label class="form-label">Başlık</label>
+        <input class="form-input" id="f-title" placeholder="Duyuru başlığı" value="${item?.title||''}">
+      </div>
+      <div class="form-group">
+        <label class="form-label">İçerik</label>
+        <textarea class="form-textarea" id="f-body" placeholder="Duyuru detayları...">${item?.body||''}</textarea>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Öncelik</label>
+          <select class="form-select" id="f-priority">
+            <option value="dusuk" ${item?.priority==='dusuk'?'selected':''}>🟢 Düşük</option>
+            <option value="orta" ${(!item||item?.priority==='orta')?'selected':''}>🟡 Orta</option>
+            <option value="yuksek" ${item?.priority==='yuksek'?'selected':''}>🔴 Yüksek</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Yayımlayan</label>
+          <input class="form-input" id="f-author" placeholder="İsim / Departman" value="${item?.author||''}">
+        </div>
+      </div>
+    `;
+  }
+
+  if (type === 'galeri') {
+    const item = editId ? state.galeri.find(g=>g.id===editId) : null;
+    title.textContent = editId ? 'Görseli Düzenle' : 'Görsel Ekle';
+    body.innerHTML = `
+      <div class="form-group">
+        <label class="form-label">Görsel Yükle</label>
+        <label style="display:flex;align-items:center;gap:0.7rem;background:var(--surface);border:2px dashed var(--border);border-radius:10px;padding:1.2rem;cursor:pointer;transition:border-color 0.2s;" 
+          onmouseover="this.style.borderColor='var(--accent3)'" onmouseout="this.style.borderColor='var(--border)'">
+          <span style="font-size:2rem;">📁</span>
+          <div>
+            <div style="font-size:0.88rem;color:var(--text);font-weight:600;">Dosya seç veya sürükle</div>
+            <div style="font-size:0.75rem;color:var(--muted);margin-top:0.2rem;">JPG, PNG, WEBP — maks. 5MB</div>
+          </div>
+          <input type="file" id="f-gfile" accept="image/*" style="display:none;" onchange="previewGaleriImage(this)">
+        </label>
+        <div id="f-gpreview" style="margin-top:0.5rem;display:none;">
+          <img id="f-gpreview-img" style="width:100%;max-height:150px;object-fit:cover;border-radius:8px;">
+        </div>
+        ${item?.url ? `<div style="margin-top:0.5rem;border-radius:8px;overflow:hidden;max-height:120px;">
+          <img src="${item.url}" style="width:100%;object-fit:cover;" onerror="this.style.display='none'">
+          <div style="font-size:0.75rem;color:var(--muted);margin-top:0.3rem;">Mevcut görsel — yeni seçim yaparsan değişir</div>
+        </div>` : ''}
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Başlık (opsiyonel)</label>
+          <input class="form-input" id="f-gbaslik" placeholder="örn. Fabrika Genel Görünüm" value="${item?.baslik||''}">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Kategori</label>
+          <select class="form-select" id="f-gkategori">
+            ${['Fabrika','Ofis','Etkinlik','Ürün','Genel'].map(k=>`<option value="${k}" ${item?.kategori===k?'selected':''}>${k}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Açıklama (opsiyonel)</label>
+        <input class="form-input" id="f-gaciklama" placeholder="Kısa açıklama..." value="${item?.aciklama||''}">
+      </div>
+    `;
+  }
+
+  if (type === 'favori') {
+    const item = editId ? state.favoriler.find(f=>f.id===editId) : null;
+    title.textContent = editId ? 'Siteyi Düzenle' : 'Site Ekle';
+    body.innerHTML = `
+      <div class="form-group">
+        <label class="form-label">Site Adı</label>
+        <input class="form-input" id="f-fbaslik" placeholder="örn. Netsis ERP" value="${item?.baslik||''}">
+      </div>
+      <div class="form-group">
+        <label class="form-label">URL</label>
+        <input class="form-input" id="f-furl" placeholder="https://..." value="${item?.url||''}">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">İkon (emoji)</label>
+          <input class="form-input" id="f-fikon" placeholder="🔗" value="${item?.ikon||'🔗'}" style="font-size:1.2rem;">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Kategori</label>
+          <input class="form-input" id="f-fkategori" placeholder="örn. ERP, Mail, HR" value="${item?.kategori||'Genel'}">
+        </div>
+      </div>
+    `;
+  }
+
+  if (type === 'rehber') {
+    const item = editId ? state.rehber.find(k=>k.id===editId) : null;
+    title.textContent = editId ? 'Kişiyi Düzenle' : 'Kişi Ekle';
+    body.innerHTML = `
+      <div class="form-group">
+        <label class="form-label">Ad Soyad</label>
+        <input class="form-input" id="f-rname" placeholder="örn. Ahmet Yılmaz" value="${item?.name||''}">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Ünite</label>
+          <select class="form-select" id="f-runite">
+            <option value="Merkez" ${(!item||item?.unite==='Merkez')?'selected':''}>🏢 Merkez</option>
+            <option value="Fabrika" ${item?.unite==='Fabrika'?'selected':''}>🏭 Fabrika</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Dahili No</label>
+          <input class="form-input" id="f-rdahili" placeholder="örn. 1180" value="${item?.dahili||''}">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Departman / Görev</label>
+        <input class="form-input" id="f-rdept" placeholder="örn. Bilgi İşlem" value="${item?.dept||''}">
+      </div>
+    `;
+  }
+
+  if (type === 'etkinlik') {
+    const item = editId ? state.etkinlikler.find(e=>e.id===editId) : null;
+    title.textContent = editId ? 'Etkinliği Düzenle' : 'Etkinlik Ekle';
+    const renkler = ['#4ecdc4','#f5a623','#e05c5c','#a78bfa','#34d399','#f472b6'];
+    const seciliRenk = item?.color || '#4ecdc4';
+    body.innerHTML = `
+      <div class="form-group">
+        <label class="form-label">Etkinlik Adı</label>
+        <input class="form-input" id="f-etitle" placeholder="örn. Yıl Sonu Yemeği" value="${item?.title||''}">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Tarih</label>
+          <input class="form-input" id="f-edate" type="date" value="${item?.date||''}">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Saat (opsiyonel)</label>
+          <input class="form-input" id="f-etime" type="time" value="${item?.time||''}">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Açıklama</label>
+        <textarea class="form-textarea" id="f-edesc" placeholder="Etkinlik detayları...">${item?.desc||''}</textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Renk</label>
+        <div style="display:flex;gap:0.6rem;margin-top:0.3rem;">
+          ${renkler.map(c=>`
+            <div class="ecolor-opt" data-color="${c}" onclick="selectEColor(this)"
+              style="width:28px;height:28px;border-radius:50%;background:${c};cursor:pointer;
+                     border:3px solid ${seciliRenk===c?'#fff':'transparent'};
+                     box-shadow:${seciliRenk===c?'0 0 0 2px '+c:'none'};
+                     transition:all 0.15s;box-sizing:border-box;"></div>
+          `).join('')}
+        </div>
+        <input type="hidden" id="f-ecolor" value="${seciliRenk}">
+      </div>
+    `;
+  }
+
+  overlay.classList.add('open');
+}
+
+function selectEColor(el) {
+  document.querySelectorAll('.ecolor-opt').forEach(x => {
+    x.style.border = '3px solid transparent';
+    x.style.boxShadow = 'none';
+  });
+  el.style.border = '3px solid #fff';
+  el.style.boxShadow = `0 0 0 2px ${el.dataset.color}`;
+  document.getElementById('f-ecolor').value = el.dataset.color;
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+  state.editId = null;
+}
+
+function closeModalOnOverlay(e) {
+  if (e.target === document.getElementById('modalOverlay')) closeModal();
+}
+
+async function saveItem() {
+  const type = state.modalType;
+
+  try {
+    if (type === 'yemek') {
+      const day = document.getElementById('f-day').value;
+      const mtype = document.getElementById('f-type').value;
+      const name = document.getElementById('f-name').value.trim();
+      const desc = document.getElementById('f-desc').value.trim();
+      if (!name) { alert('Yemek adı boş olamaz!'); return; }
+      await sbSaveYemek({ day, type: mtype, name, desc }, state.editId);
+      state.meals = await sbGetYemekler();
+      renderMeals();
+    }
+
+    if (type === 'dogumgunu') {
+      const name = document.getElementById('f-name').value.trim();
+      const dept = document.getElementById('f-dept').value.trim();
+      const date = document.getElementById('f-date').value.trim();
+      if (!name || !date) { alert('Ad ve tarih zorunludur!'); return; }
+      if (!/^\d{2}\.\d{2}$/.test(date)) { alert('Tarih GG.AA formatında olmalı (örn: 15.03)'); return; }
+      const color = avatarColors[state.birthdays.length % avatarColors.length];
+      await sbSaveDogumGunu({ name, dept, date, color }, state.editId);
+      state.birthdays = await sbGetDogumGunleri();
+      renderBirthdays();
+    }
+
+    if (type === 'duyuru') {
+      const title = document.getElementById('f-title').value.trim();
+      const body = document.getElementById('f-body').value.trim();
+      const priority = document.getElementById('f-priority').value;
+      const author = document.getElementById('f-author').value.trim() || 'Yönetim';
+      if (!title || !body) { alert('Başlık ve içerik zorunludur!'); return; }
+      await sbSaveDuyuru({ title, body, priority, author }, state.editId);
+      state.announcements = await sbGetDuyurular();
+      renderAnnouncements();
+    }
+
+    if (type === 'etkinlik') {
+      const etitle = document.getElementById('f-etitle').value.trim();
+      const edate = document.getElementById('f-edate').value;
+      const etime = document.getElementById('f-etime').value;
+      const edesc = document.getElementById('f-edesc').value.trim();
+      const ecolor = document.getElementById('f-ecolor').value || '#4ecdc4';
+      if (!etitle || !edate) { alert('Etkinlik adı ve tarih zorunludur!'); return; }
+      await sbSaveEtkinlik({ title:etitle, date:edate, time:etime, desc:edesc, color:ecolor }, state.editId);
+      state.etkinlikler = await sbGetEtkinlikler();
+      renderEtkinlikler();
+    }
+
+    if (type === 'rehber') {
+      const name = document.getElementById('f-rname').value.trim();
+      const unite = document.getElementById('f-runite').value;
+      const dahili = document.getElementById('f-rdahili').value.trim();
+      const dept = document.getElementById('f-rdept').value.trim();
+      if (!name || !dahili) { alert('Ad ve dahili numara zorunludur!'); return; }
+      await sbSaveRehber({ name, unite, dahili, dept }, state.editId);
+      state.rehber = await sbGetRehber();
+      renderRehber();
+    }
+
+    if (type === 'favori') {
+      const baslik = document.getElementById('f-fbaslik').value.trim();
+      const url = document.getElementById('f-furl').value.trim();
+      const ikon = document.getElementById('f-fikon').value.trim() || '🔗';
+      const kategori = document.getElementById('f-fkategori').value.trim() || 'Genel';
+      if (!baslik || !url) { alert('Site adı ve URL zorunludur!'); return; }
+      await sbSaveFavori({ baslik, url, ikon, kategori }, state.editId);
+      state.favoriler = await sbGetFavoriler();
+      renderFavoriler();
+    }
+
+    if (type === 'galeri') {
+      const fileInput = document.getElementById('f-gfile');
+      const baslik = document.getElementById('f-gbaslik').value.trim();
+      const kategori = document.getElementById('f-gkategori').value;
+      const aciklama = document.getElementById('f-gaciklama').value.trim();
+      const file = fileInput?.files?.[0];
+      let url = state.editId ? state.galeri.find(g=>g.id===state.editId)?.url : null;
+
+      if (file) {
+        const ext = file.name.split('.').pop().toLowerCase();
+        const fileName = Date.now() + '_' + Math.random().toString(36).slice(2) + '.' + ext;
+        showToast('⏳ Görsel yükleniyor...');
+        const { data: uploadData, error: uploadError } = await db.storage
+          .from('galeri-gorseller')
+          .upload(fileName, file, { cacheControl: '3600', upsert: false });
+        if (uploadError) { showToast('❌ Yükleme hatası: ' + uploadError.message); return; }
+        const { data: urlData } = db.storage.from('galeri-gorseller').getPublicUrl(fileName);
+        url = urlData.publicUrl;
+      }
+
+      if (!url) { alert('Lütfen bir görsel seçin!'); return; }
+      await sbSaveGaleri({ url, baslik, kategori, aciklama }, state.editId);
+      state.galeri = await sbGetGaleri();
+      renderGaleri();
+    }
+
+    closeModal();
+    showToast('✅ Kaydedildi!');
+  } catch(e) {
+    console.error('Kaydetme hatası:', e);
+    showToast('❌ Kaydetme başarısız!');
+  }
+}
+
+
+function editItem(type, id) {
+  const section = type === 'yemek' ? 'yemek' : type === 'dogumgunu' ? 'dogumgunu' : type === 'etkinlik' ? 'etkinlik' : type === 'rehber' ? 'rehber' : type === 'favori' ? 'favoriler' : type === 'galeri' ? 'galeri' : 'duyuru';
+  showSection(section);
+  openModal(type, id);
+}
+
+async function deleteItem(type, id) {
+  if (!confirm('Silmek istediğinize emin misiniz?')) return;
+  try {
+    if (type === 'yemek') { await sbDeleteYemek(id); state.meals = await sbGetYemekler(); renderMeals(); }
+    if (type === 'dogumgunu') { await sbDeleteDogumGunu(id); state.birthdays = await sbGetDogumGunleri(); renderAnnouncements(); }
+    if (type === 'duyuru') { await sbDeleteDuyuru(id); state.announcements = await sbGetDuyurular(); renderAnnouncements(); }
+    if (type === 'etkinlik') { await sbDeleteEtkinlik(id); state.etkinlikler = await sbGetEtkinlikler(); renderEtkinlikler(); }
+    if (type === 'rehber') { await sbDeleteRehber(id); state.rehber = await sbGetRehber(); renderRehber(); }
+    if (type === 'favori') { await sbDeleteFavori(id); state.favoriler = await sbGetFavoriler(); renderFavoriler(); }
+    if (type === 'galeri') { await sbDeleteGaleri(id); state.galeri = await sbGetGaleri(); renderGaleri(); }
+    showToast('🗑️ Silindi.');
+  } catch(e) {
+    console.error('Silme hatası:', e);
+    showToast('❌ Silme başarısız!');
+  }
+}
+
+// ===== WORD IMPORT =====
+// Türkçe büyük harf güvenli normalize
+function trUpper(str) {
+  return str.replace(/ı/g,'I').replace(/i/g,'İ').toUpperCase();
+}
+
+const DAY_MAP = {
+  'PAZARTESİ': 'Pazartesi', 'SALI': 'Salı', 'ÇARŞAMBA': 'Çarşamba',
+  'PERŞEMBE': 'Perşembe', 'CUMA': 'Cuma', 'CUMARTESİ': 'Cumartesi', 'PAZAR': 'Pazar'
+};
+
+// Hücre metninden gün adını bul
+function findDayKey(text) {
+  const upper = trUpper(text.trim());
+  return Object.keys(DAY_MAP).find(k => upper.startsWith(k) || upper === k) || null;
+}
+
+function importWordFile(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  // Reset input so same file can be re-imported
+  event.target.value = '';
+
+  const overlay = document.getElementById('importLoadingOverlay');
+  overlay.style.opacity = '1';
+  overlay.style.pointerEvents = 'all';
+  document.getElementById('importStatus').textContent = `"${file.name}" okunuyor...`;
+
+  const reader = new FileReader();
+  reader.onload = async (e) => {
+    try {
+      const arrayBuffer = e.target.result;
+      const result = await mammoth.convertToHtml({ arrayBuffer });
+      const html = result.value;
+
+      // HTML'i parse et
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, 'text/html');
+      const tables = doc.querySelectorAll('table');
+
+      if (!tables.length) {
+        hideImportLoading();
+        showToast('❌ Dosyada tablo bulunamadı!');
+        return;
+      }
+
+      const parsed = {}; // { 'Pazartesi': ['yemek1', 'yemek2', ...], ... }
+
+      tables.forEach(table => {
+        const cells = table.querySelectorAll('td, th');
+        cells.forEach(cell => {
+          const lines = [];
+          cell.querySelectorAll('p, li').forEach(el => {
+            const text = el.textContent.trim().replace(/\s+/g, ' ');
+            if (text) lines.push(text);
+          });
+
+          if (!lines.length) return;
+
+          // İlk satır gün adı mı? (Türkçe güvenli)
+          const dayKey = findDayKey(lines[0]);
+          if (!dayKey) return;
+
+          const dayName = DAY_MAP[dayKey];
+          // Gün adı satırını atla, gerisi yemek
+          const meals = lines.slice(1).filter(l => {
+            const t = l.trim();
+            return t.length > 1 && !t.match(/^[.\s]+$/) && !t.match(/^AFİYET/i) && !t.match(/^RAMAZAN/i) && !t.match(/^İFTAR/i);
+          });
+          if (meals.length) {
+            parsed[dayName] = meals;
+          }
+        });
+      });
+
+      const dayCount = Object.keys(parsed).length;
+      if (!dayCount) {
+        hideImportLoading();
+        showToast('❌ Gün/yemek verisi okunamadı!');
+        return;
+      }
+
+      // Yeni verileri hazırla
+      let total = 0;
+      const newMeals = [];
+      Object.entries(parsed).forEach(([day, items]) => {
+        items.forEach((name, idx) => {
+          newMeals.push({ id: uid(), day, type: 'ogle', name, desc: '', imported: true, order: idx });
+          total++;
+        });
+      });
+
+      document.getElementById('importStatus').textContent = 'Veritabanı güncelleniyor...';
+
+      // Supabase: önce eski import edilmiş yemekleri sil, sonra yenilerini ekle
+      await sbDeleteImportedYemekler();
+      await sbBulkSaveYemekler(newMeals);
+
+      // State güncelle
+      state.meals = await sbGetYemekler();
+
+      // Banner güncelle
+      state.importedFileName = file.name;
+      state.importedDayCount = dayCount;
+      state.importedMealCount = total;
+
+      saveState();
+      hideImportLoading();
+      updateWeekBanner();
+
+      // Aktif günü ilk bulunan güne ayarla
+      const firstDay = Object.keys(parsed)[0];
+      if (firstDay) { state.activeDay = firstDay; }
+
+      renderMeals();
+      showToast(`✅ ${dayCount} gün, ${total} yemek yüklendi!`);
+
+    } catch (err) {
+      hideImportLoading();
+      showToast('❌ Dosya okunamadı: ' + err.message);
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function hideImportLoading() {
+  const overlay = document.getElementById('importLoadingOverlay');
+  overlay.style.opacity = '0';
+  overlay.style.pointerEvents = 'none';
+}
+
+function updateWeekBanner() {
+  const banner = document.getElementById('weekBanner');
+  if (!banner) return;
+  if (state.importedFileName) {
+    document.getElementById('weekBannerText').textContent =
+      `${state.importedFileName}  ·  ${state.importedDayCount} gün  ·  ${state.importedMealCount} yemek`;
+    banner.style.display = 'flex';
+  } else {
+    banner.style.display = 'none';
+  }
+}
+
+async function clearImportedMeals() {
+  if (!confirm('İçe aktarılan tüm yemekler silinsin mi?')) return;
+  try {
+    await sbDeleteImportedYemekler();
+    state.meals = await sbGetYemekler();
+    state.importedFileName = null;
+    state.importedDayCount = 0;
+    state.importedMealCount = 0;
+    saveState();
+    updateWeekBanner();
+    renderMeals();
+    showToast('🗑️ İçe aktarılan yemekler temizlendi.');
+  } catch(e) {
+    showToast('❌ Silme başarısız!');
+  }
+}
+
+// ===== DOĞUM GÜNÜ BİLDİRİMLERİ =====
+
+// Bir doğum gününün bugünden kaç gün sonra olduğunu hesapla (0=bugün, -1=geçti, max 365)
+function daysUntilBirthday(dateStr) {
+  const [dd, mm] = dateStr.split('.').map(Number);
+  const today = new Date();
+  const thisYear = today.getFullYear();
+
+  let bday = new Date(thisYear, mm - 1, dd);
+  const todayMidnight = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+
+  let diff = Math.round((bday - todayMidnight) / (1000 * 60 * 60 * 24));
+  if (diff < 0) {
+    // Bu yıl geçtiyse gelecek yıla bak
+    bday = new Date(thisYear + 1, mm - 1, dd);
+    diff = Math.round((bday - todayMidnight) / (1000 * 60 * 60 * 24));
+  }
+  return diff;
+}
+
+function getUpcoming(days = 7) {
+  return state.birthdays
+    .map(b => ({ ...b, daysLeft: daysUntilBirthday(b.date) }))
+    .filter(b => b.daysLeft >= 0 && b.daysLeft <= days)
+    .sort((a, b) => a.daysLeft - b.daysLeft);
+}
+
+function renderUpcomingBanner() {
+  const container = document.getElementById('upcomingBanner');
+  if (!container) return;
+
+  const upcoming = getUpcoming(7);
+  if (!upcoming.length) {
+    container.innerHTML = '';
+    return;
+  }
+
+  const cards = upcoming.map(b => {
+    const initials = b.name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+    let tagHtml, cardClass;
+    if (b.daysLeft === 0) {
+      tagHtml = `<span class="upcoming-tag tag-today">🎉 Bugün!</span>`;
+      cardClass = 'upcoming-today';
+    } else if (b.daysLeft === 1) {
+      tagHtml = `<span class="upcoming-tag tag-tomorrow">⏰ Yarın</span>`;
+      cardClass = 'upcoming-soon';
+    } else {
+      tagHtml = `<span class="upcoming-tag tag-soon">📅 ${b.daysLeft} gün sonra</span>`;
+      cardClass = 'upcoming-soon';
+    }
+    return `
+      <div class="upcoming-card ${cardClass}">
+        <div class="upcoming-avatar" style="background:${b.color}22;color:${b.color}">${initials}</div>
+        <div class="upcoming-info">
+          <div class="upcoming-name">${b.name}</div>
+          <div class="upcoming-dept">${b.dept} &nbsp;·&nbsp; 🎂 ${b.date}</div>
+        </div>
+        ${tagHtml}
+      </div>
+    `;
+  }).join('');
+
+  container.innerHTML = `<div class="upcoming-banner">${cards}</div>`;
+}
+
+function updateNotifBadge() {
+  const badge = document.getElementById('bdNotifBadge');
+  if (!badge) return;
+  const upcoming = getUpcoming(7);
+  if (upcoming.length) {
+    badge.textContent = upcoming.length;
+    badge.style.display = 'flex';
+  } else {
+    badge.style.display = 'none';
+  }
+}
+
+// ===== ETKİNLİKLER =====
+const ETKINLIK_COLORS = ['#4ecdc4','#f5a623','#e05c5c','#a78bfa','#34d399','#f472b6'];
+
+// ===== ADMIN SİSTEMİ =====
+// Süper admin (HTML'de sabit) - kullanıcı yönetimi yapabilir
+const SUPER_ADMIN = { username: 'superadmin', password: 'Umran2024!' };
+
+// SHA-256 hash fonksiyonu
+async function sha256(str) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+// Admin kullanıcılarını Supabase'den yükle
+async function loadAdmins() {
+  return await sbGetAdmins();
+}
+
+// Admin giriş panelini aç/kapat
+function toggleAdminPanel() {
+  if (state.adminLoggedIn) {
+    showAdminDashboard();
+  } else {
+    showAdminLoginForm();
+  }
+}
+
+function closeAdminPanelOnOverlay(e) {
+  if (e.target === document.getElementById('adminPanelOverlay')) closeAdminPanel();
+}
+
+function closeAdminPanel() {
+  const ov = document.getElementById('adminPanelOverlay');
+  ov.style.opacity = '0';
+  ov.style.pointerEvents = 'none';
+}
+
+function openAdminPanel() {
+  const ov = document.getElementById('adminPanelOverlay');
+  ov.style.opacity = '1';
+  ov.style.pointerEvents = 'all';
+}
+
+function showAdminLoginForm() {
+  document.getElementById('adminPanelTitle').textContent = '🔐 Admin Girişi';
+  document.getElementById('adminPanelBody').innerHTML = `
+    <div class="form-group">
+      <label class="form-label">Kullanıcı Adı</label>
+      <input class="form-input" id="ap-user" placeholder="Kullanıcı adı" autocomplete="off">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Şifre</label>
+      <input class="form-input" id="ap-pass" type="password" placeholder="Şifre" onkeydown="if(event.key==='Enter')doAdminLogin()">
+    </div>
+    <div id="ap-error" style="color:var(--accent2);font-size:0.82rem;margin-top:0.3rem;display:none;">Hatalı kullanıcı adı veya şifre!</div>
+  `;
+  document.getElementById('adminPanelActions').innerHTML = `
+    <button class="btn-cancel" onclick="closeAdminPanel()">İptal</button>
+    <button class="btn-add" onclick="doAdminLogin()">🔐 Giriş Yap</button>
+  `;
+  openAdminPanel();
+  setTimeout(() => document.getElementById('ap-user')?.focus(), 100);
+}
+
+async function doAdminLogin() {
+  const user = document.getElementById('ap-user').value.trim();
+  const pass = document.getElementById('ap-pass').value;
+  if (!user || !pass) return;
+
+  const hash = await sha256(pass);
+
+  // Süper admin kontrolü
+  const superHash = await sha256(SUPER_ADMIN.password);
+  if (user === SUPER_ADMIN.username && hash === superHash) {
+    state.adminLoggedIn = true;
+    state.adminUser = { username: user, role: 'super' };
+    updateAdminBtn();
+    renderEtkinlikler();
+    showAdminDashboard();
+    return;
+  }
+
+  // Normal admin kontrolü - Supabase'den
+  const admins = await loadAdmins();
+  const found = admins.find(a => a.kullanici_adi === user && a.sifre_hash === hash);
+  if (found) {
+    state.adminLoggedIn = true;
+    state.adminUser = { username: user, role: found.rol || 'admin' };
+    updateAdminBtn();
+    renderEtkinlikler();
+    showAdminDashboard();
+  } else {
+    document.getElementById('ap-error').style.display = 'block';
+  }
+}
+
+async function showAdminDashboard() {
+  const isSuperAdmin = state.adminUser?.role === 'super';
+  document.getElementById('adminPanelTitle').textContent = `👤 ${state.adminUser?.username || 'Admin'}`;
+  const userListHTML = isSuperAdmin ? await renderUserListHTML() : '';
+  document.getElementById('adminPanelBody').innerHTML = `
+    <div style="margin-bottom:1rem;padding:0.8rem 1rem;background:var(--surface2);border-radius:8px;border:1px solid var(--border);font-size:0.85rem;color:var(--muted);">
+      <span style="color:var(--accent3);font-weight:600;">●</span> Giriş yapıldı
+      ${isSuperAdmin ? '<span style="margin-left:0.5rem;background:rgba(245,166,35,0.15);color:var(--accent);font-size:0.72rem;font-weight:700;padding:0.15rem 0.5rem;border-radius:10px;letter-spacing:0.05em;">SÜPER ADMİN</span>' : ''}
+    </div>
+    ${userListHTML}
+  `;
+  document.getElementById('adminPanelActions').innerHTML = `
+    ${isSuperAdmin ? '<button class="btn-add" onclick="showAddUserForm()" style="margin-right:auto">+ Kullanıcı Ekle</button>' : ''}
+    <button class="btn-add" onclick="closeAdminPanel();openModal('dogumgunu');" style="background:var(--surface2);border:1px solid var(--border);color:var(--muted);">🎂 Doğum Günü Ekle</button>
+    <button class="btn-cancel" onclick="doAdminLogout()">🚪 Çıkış</button>
+    <button class="btn-add" onclick="closeAdminPanel()">Kapat</button>
+  `;
+  // Gizli imza
+  document.getElementById('adminPanelBody').innerHTML += '<div style="margin-top:1.2rem;padding-top:1rem;border-top:1px solid var(--border);text-align:center;"><span style="font-size:0.72rem;color:var(--muted);">Ümran Portal v1.0 · Geliştirici: </span><span style="font-size:0.72rem;color:var(--accent3);font-weight:600;">Volkan Gökenci</span><span style="font-size:0.72rem;color:var(--muted);"> / Bilgi İşlem</span></div>';
+  openAdminPanel();
+}
+
+async function renderUserListHTML() {
+  const admins = await loadAdmins();
+  if (!admins.length) return '<div style="font-size:0.84rem;color:var(--muted);text-align:center;padding:1rem 0;">Henüz admin kullanıcısı eklenmemiş.</div>';
+  return `
+    <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text2);margin-bottom:0.6rem;">Kullanıcılar</div>
+    <div style="display:flex;flex-direction:column;gap:0.4rem;">
+      ${admins.map(a => `
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:0.6rem 0.8rem;background:var(--surface2);border:1px solid var(--border);border-radius:8px;">
+          <span style="font-size:0.87rem;color:var(--text);font-weight:500;">👤 ${a.kullanici_adi}</span>
+          <button onclick="deleteAdmin('${a.kullanici_adi}')" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:0.85rem;padding:0;transition:color 0.15s" onmouseover="this.style.color='var(--accent2)'" onmouseout="this.style.color='var(--muted)'">✕</button>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function showAddUserForm() {
+  document.getElementById('adminPanelTitle').textContent = '➕ Yeni Kullanıcı';
+  document.getElementById('adminPanelBody').innerHTML = `
+    <div class="form-group">
+      <label class="form-label">Kullanıcı Adı</label>
+      <input class="form-input" id="nu-user" placeholder="örn. ahmet.yilmaz" autocomplete="off">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Şifre</label>
+      <input class="form-input" id="nu-pass" type="password" placeholder="En az 4 karakter">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Şifre Tekrar</label>
+      <input class="form-input" id="nu-pass2" type="password" placeholder="Şifreyi tekrar girin">
+    </div>
+    <div id="nu-error" style="color:var(--accent2);font-size:0.82rem;margin-top:0.3rem;display:none;"></div>
+  `;
+  document.getElementById('adminPanelActions').innerHTML = `
+    <button class="btn-cancel" onclick="showAdminDashboard()">← Geri</button>
+    <button class="btn-add" onclick="doAddUser()">Kaydet</button>
+  `;
+}
+
+async function doAddUser() {
+  const username = document.getElementById('nu-user').value.trim();
+  const pass = document.getElementById('nu-pass').value;
+  const pass2 = document.getElementById('nu-pass2').value;
+  const errEl = document.getElementById('nu-error');
+
+  if (!username || !pass) { errEl.textContent='Kullanıcı adı ve şifre zorunludur!'; errEl.style.display='block'; return; }
+  if (pass.length < 4) { errEl.textContent='Şifre en az 4 karakter olmalıdır!'; errEl.style.display='block'; return; }
+  if (pass !== pass2) { errEl.textContent='Şifreler eşleşmiyor!'; errEl.style.display='block'; return; }
+  if (username === SUPER_ADMIN.username) { errEl.textContent='Bu kullanıcı adı kullanılamaz!'; errEl.style.display='block'; return; }
+
+  try {
+    const passwordHash = await sha256(pass);
+    await sbSaveAdmin(username, passwordHash);
+    showToast('✅ Kullanıcı eklendi!');
+    showAdminDashboard();
+  } catch(e) {
+    errEl.textContent = e.message?.includes('duplicate') ? 'Bu kullanıcı adı zaten kullanımda!' : 'Hata oluştu!';
+    errEl.style.display = 'block';
+  }
+}
+
+async function deleteAdmin(username) {
+  if (!confirm(`"${username}" kullanıcısını silmek istediğinize emin misiniz?`)) return;
+  try {
+    await sbDeleteAdmin(username);
+    showToast('🗑️ Kullanıcı silindi.');
+    showAdminDashboard();
+  } catch(e) {
+    showToast('❌ Silme başarısız!');
+  }
+}
+
+function doAdminLogout() {
+  state.adminLoggedIn = false;
+  state.adminUser = null;
+  updateAdminBtn();
+  renderEtkinlikler();
+  closeAdminPanel();
+  showToast('👋 Çıkış yapıldı.');
+}
+
+function updateAdminBtn() {
+  const btn = document.getElementById('btnAdminGiris');
+  if (btn) {
+    if (state.adminLoggedIn) {
+      btn.innerHTML = `👤 ${state.adminUser?.username || 'Admin'}`;
+      btn.style.borderColor = 'var(--accent3)';
+      btn.style.color = 'var(--accent3)';
+    } else {
+      btn.innerHTML = '🔐 Giriş';
+      btn.style.borderColor = 'var(--border)';
+      btn.style.color = 'var(--muted)';
+    }
+  }
+  const etkinlikBtn = document.getElementById('btnEtkinlikEkle');
+  if (etkinlikBtn) etkinlikBtn.style.display = state.adminLoggedIn ? 'inline-flex' : 'none';
+  const rehberBtn = document.getElementById('btnRehberEkle');
+  if (rehberBtn) rehberBtn.style.display = state.adminLoggedIn ? 'inline-flex' : 'none';
+  const favoriBtn = document.getElementById('btnFavoriEkle');
+  if (favoriBtn) favoriBtn.style.display = state.adminLoggedIn ? 'inline-flex' : 'none';
+  const galeriBtn = document.getElementById('btnGaleriEkle');
+  if (galeriBtn) galeriBtn.style.display = state.adminLoggedIn ? 'inline-flex' : 'none';
+  const yemekEkleBtn = document.getElementById('btnYemekEkle');
+  if (yemekEkleBtn) yemekEkleBtn.style.display = state.adminLoggedIn ? 'inline-flex' : 'none';
+  const wordImportBtn = document.getElementById('btnWordImport');
+  if (wordImportBtn) wordImportBtn.style.display = state.adminLoggedIn ? 'inline-flex' : 'none';
+  const listeTemizleBtn = document.getElementById('btnListeTemizle');
+  if (listeTemizleBtn) listeTemizleBtn.style.display = state.adminLoggedIn ? 'inline-flex' : 'none';
+  const duyuruEkleBtn = document.getElementById('btnDuyuruEkle');
+  if (duyuruEkleBtn) duyuruEkleBtn.style.display = state.adminLoggedIn ? 'inline-flex' : 'none';
+}
+
+function adminGiris() {
+  if (state.adminLoggedIn) {
+    openModal('etkinlik');
+  } else {
+    showAdminLoginForm();
+  }
+}
+
+function formatEtkinlikTarih(dateStr) {
+  if (!dateStr) return '';
+  const d = new Date(dateStr + 'T00:00:00');
+  return d.toLocaleDateString('tr-TR', { day:'numeric', month:'long', year:'numeric', weekday:'long' });
+}
+
+function etkinlikGunFarki(dateStr) {
+  if (!dateStr) return null;
+  const today = new Date(); today.setHours(0,0,0,0);
+  const ev = new Date(dateStr + 'T00:00:00');
+  const diff = Math.round((ev - today) / 86400000);
+  return diff;
+}
+
+function renderEtkinlikler() {
+  const grid = document.getElementById('etkinlikGrid');
+  if (!grid) return;
+
+  // Etkinlik ekle butonunu admin durumuna göre güncelle
+  const btn = document.getElementById('btnEtkinlikEkle');
+  if (btn) btn.style.display = state.adminLoggedIn ? 'inline-flex' : 'none';
+
+  if (!state.etkinlikler.length) {
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;padding:3rem;background:var(--surface2);border-radius:12px;border:1px solid var(--border);text-align:center"><div class="empty-icon">🎉</div><p>Henüz etkinlik eklenmemiş.</p></div>`;
+    return;
+  }
+
+  // Tarihe göre sırala
+  const sorted = [...state.etkinlikler].sort((a,b) => new Date(a.date) - new Date(b.date));
+  const today = new Date(); today.setHours(0,0,0,0);
+
+  // Yaklaşan ve geçmiş ayır
+  const upcoming = sorted.filter(e => new Date(e.date+'T00:00:00') >= today);
+  const past = sorted.filter(e => new Date(e.date+'T00:00:00') < today);
+
+  let html = '';
+
+  if (upcoming.length) {
+    html += upcoming.map(e => etkinlikKart(e, false)).join('');
+  }
+
+  if (past.length) {
+    html += `<div style="grid-column:1/-1;margin-top:0.5rem;padding-top:1rem;border-top:1px solid var(--border)">
+      <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:1rem">Geçmiş Etkinlikler</div>
+    </div>`;
+    html += past.reverse().map(e => etkinlikKart(e, true)).join('');
+  }
+
+  grid.innerHTML = html;
+}
+
+function etkinlikKart(e, gecmis) {
+  const diff = etkinlikGunFarki(e.date);
+  let etiket = '';
+  if (diff === 0) etiket = `<span style="background:${e.color}22;color:${e.color};font-size:0.68rem;font-weight:700;padding:0.2rem 0.6rem;border-radius:20px;letter-spacing:0.05em;">🔥 BUGÜN</span>`;
+  else if (diff === 1) etiket = `<span style="background:${e.color}22;color:${e.color};font-size:0.68rem;font-weight:700;padding:0.2rem 0.6rem;border-radius:20px;letter-spacing:0.05em;">⏰ YARIN</span>`;
+  else if (diff > 1 && diff <= 7) etiket = `<span style="background:${e.color}22;color:${e.color};font-size:0.68rem;font-weight:700;padding:0.2rem 0.6rem;border-radius:20px;letter-spacing:0.05em;">${diff} gün sonra</span>`;
+  else if (gecmis) etiket = `<span style="background:var(--surface);color:var(--muted);font-size:0.68rem;font-weight:600;padding:0.2rem 0.6rem;border-radius:20px;">Geçti</span>`;
+
+  const adminBtns = state.adminLoggedIn ? `
+    <div style="display:flex;gap:0.4rem;margin-top:1rem;">
+      <button class="btn-edit" onclick="editItem('etkinlik','${e.id}')">Düzenle</button>
+      <button class="btn-danger" onclick="deleteItem('etkinlik','${e.id}')">Sil</button>
+    </div>` : '';
+
+  return `
+    <div style="background:var(--surface2);border:1px solid var(--border);border-top:4px solid ${e.color};border-radius:12px;padding:1.4rem;opacity:${gecmis?'0.6':'1'};transition:opacity 0.2s;">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:0.5rem;margin-bottom:0.8rem;">
+        <div style="font-size:1.05rem;font-weight:700;color:var(--text);line-height:1.3;">${e.title}</div>
+        ${etiket}
+      </div>
+      <div style="display:flex;align-items:center;gap:0.4rem;font-size:0.82rem;color:${e.color};font-weight:600;margin-bottom:${e.desc?'0.7rem':'0'}">
+        📅 ${formatEtkinlikTarih(e.date)}${e.time ? ' · ⏰ ' + e.time : ''}
+      </div>
+      ${e.desc ? `<div style="font-size:0.84rem;color:var(--muted);line-height:1.6;">${e.desc}</div>` : ''}
+      ${adminBtns}
+    </div>
+  `;
+}
+
+// ===== DAHİLİ REHBER =====
+let rehberTabState = 'merkez';
+
+function selectRehberTab(tab) {
+  rehberTabState = tab;
+  // Tab butonlarını güncelle
+  ['merkez','fabrika','tumu'].forEach(t => {
+    const btn = document.getElementById('rtab-' + t);
+    if (!btn) return;
+    if (t === tab) {
+      btn.style.borderBottom = '3px solid var(--accent3)';
+      btn.style.color = 'var(--accent3)';
+    } else {
+      btn.style.borderBottom = '3px solid transparent';
+      btn.style.color = 'var(--muted)';
+    }
+  });
+  filterRehber();
+}
+
+function filterRehber() {
+  const q = (document.getElementById('rehberSearch')?.value || '').toLowerCase().trim();
+  let liste = state.rehber;
+
+  // Tab filtresi
+  if (rehberTabState === 'merkez') liste = liste.filter(k => k.unite === 'Merkez');
+  else if (rehberTabState === 'fabrika') liste = liste.filter(k => k.unite === 'Fabrika');
+
+  // Arama filtresi
+  if (q) liste = liste.filter(k =>
+    k.name.toLowerCase().includes(q) ||
+    (k.dept||'').toLowerCase().includes(q) ||
+    (k.dahili||'').includes(q)
+  );
+
+  renderRehberList(liste);
+}
+
+function renderRehber() {
+  // Admin butonunu güncelle
+  const btn = document.getElementById('btnRehberEkle');
+  if (btn) btn.style.display = state.adminLoggedIn ? 'inline-flex' : 'none';
+  filterRehber();
+}
+
+function renderRehberList(liste) {
+  const grid = document.getElementById('rehberGrid');
+  if (!grid) return;
+
+  if (!liste.length) {
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;padding:3rem;background:var(--surface2);border-radius:12px;border:1px solid var(--border);text-align:center">
+      <div class="empty-icon">📋</div><p>Kayıt bulunamadı.</p></div>`;
+    return;
+  }
+
+  grid.innerHTML = liste.map(k => {
+    const renk = k.unite === 'Merkez' ? 'var(--accent3)' : 'var(--accent)';
+    const uniteBadge = k.unite === 'Merkez' ? '🏢' : '🏭';
+    const adminBtns = state.adminLoggedIn ? `
+      <div style="display:flex;gap:0.4rem;margin-top:0.8rem;padding-top:0.6rem;border-top:1px solid var(--border);">
+        <button class="btn-edit" onclick="editItem('rehber','${k.id}')" style="font-size:0.75rem;padding:0.25rem 0.6rem;">Düzenle</button>
+        <button class="btn-danger" onclick="deleteItem('rehber','${k.id}')" style="font-size:0.75rem;padding:0.25rem 0.6rem;">Sil</button>
+      </div>` : '';
+
+    return `
+      <div style="background:var(--surface2);border:1px solid var(--border);border-left:4px solid ${renk};border-radius:10px;padding:1rem 1.1rem;display:flex;flex-direction:column;gap:0.3rem;">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:0.5rem;">
+          <div style="font-size:0.92rem;font-weight:700;color:var(--text);">${k.name}</div>
+          <span style="font-size:0.7rem;font-weight:600;color:${renk};background:${renk}22;padding:0.15rem 0.5rem;border-radius:10px;white-space:nowrap;">${uniteBadge} ${k.unite}</span>
+        </div>
+        ${k.dept ? `<div style="font-size:0.8rem;color:var(--muted);">${k.dept}</div>` : ''}
+        <div style="display:flex;align-items:center;gap:0.4rem;margin-top:0.3rem;">
+          <span style="font-size:1rem;">📞</span>
+          <span style="font-size:1rem;font-weight:700;color:${renk};letter-spacing:0.05em;">${k.dahili}</span>
+        </div>
+        ${adminBtns}
+      </div>`;
+  }).join('');
+}
+
+// ===== FAVORİ SİTELER =====
+// Sabit logo map - domain -> base64 logo
+const SITE_LOGOLARI = {
+  'umranerp.umran.com': 'data:image/png;base64,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',
+  'turkkep.com.tr': 'data:image/png;base64,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',
+};
+
+function getSiteLogo(url, ikon) {
+  try {
+    const domain = new URL(url.startsWith('http') ? url : 'https://' + url).hostname;
+    for (const key of Object.keys(SITE_LOGOLARI)) {
+      if (domain.includes(key)) {
+        return '<img src="' + SITE_LOGOLARI[key] + '" style="width:56px;height:56px;object-fit:contain;" onerror="this.style.display=\'none\'">';
+      }
+    }
+  } catch(e) {}
+  return '<span style="font-size:2.5rem;">' + ikon + '</span>';
+}
+
+function renderFavoriler() {
+  const grid = document.getElementById('favoriGrid');
+  if (!grid) return;
+
+  const btn = document.getElementById('btnFavoriEkle');
+  if (btn) btn.style.display = state.adminLoggedIn ? 'inline-flex' : 'none';
+
+  if (!state.favoriler.length) {
+    grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1;padding:3rem;background:var(--surface);border-radius:12px;border:1px solid var(--border);text-align:center"><div class="empty-icon">🔗</div><p>Henüz favori site eklenmemiş.</p></div>';
+    return;
+  }
+
+  const kategoriler = [...new Set(state.favoriler.map(f => f.kategori))];
+  let html = '';
+
+  kategoriler.forEach(kat => {
+    const siteler = state.favoriler.filter(f => f.kategori === kat);
+    html += '<div style="grid-column:1/-1;font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-top:0.5rem;margin-bottom:0.6rem;padding-bottom:0.4rem;border-bottom:1px solid var(--border);">' + kat + '</div>';
+    siteler.forEach(f => {
+      const logoHtml = getSiteLogo(f.url, f.ikon);
+      const adminBtns = state.adminLoggedIn
+        ? '<div style="display:flex;gap:0.4rem;width:100%;margin-top:0.3rem;" onclick="event.stopPropagation()"><button class="btn-edit" onclick="editItem('favori','' + f.id + '')" style="font-size:0.72rem;padding:0.2rem 0.5rem;flex:1;">Düzenle</button><button class="btn-danger" onclick="deleteItem('favori','' + f.id + '')" style="font-size:0.72rem;padding:0.2rem 0.5rem;flex:1;">Sil</button></div>'
+        : '';
+      html += '<div class="hover-card" style="background:var(--surface);border:1.5px solid var(--border);border-radius:14px;padding:1.5rem 1rem;display:flex;flex-direction:column;align-items:center;gap:0.7rem;cursor:pointer;box-shadow:0 2px 8px var(--shadow);text-align:center;" onclick="window.open('' + f.url + '','_blank')">'
+        + '<div style="width:72px;height:72px;display:flex;align-items:center;justify-content:center;background:var(--surface2);border-radius:14px;padding:0.6rem;">' + logoHtml + '</div>'
+        + '<div style="font-weight:700;font-size:0.88rem;color:var(--text);line-height:1.3;">' + f.baslik + '</div>'
+        + adminBtns
+        + '</div>';
+    });
+  });
+
+  grid.innerHTML = html;
+}
+
+// ===== GALERİ =====
+function renderGaleri() {
+  const grid = document.getElementById('galeriGrid');
+  const filtreler = document.getElementById('galeriFiltreler');
+  if (!grid) return;
+
+  const btn = document.getElementById('btnGaleriEkle');
+  if (btn) btn.style.display = state.adminLoggedIn ? 'inline-flex' : 'none';
+
+  if (!state.galeri.length) {
+    filtreler.innerHTML = '';
+    grid.innerHTML = `<div style="text-align:center;padding:3rem;background:var(--surface2);border-radius:12px;border:1px solid var(--border);">
+      <div style="font-size:3rem;margin-bottom:1rem;">🖼️</div>
+      <p style="color:var(--muted);">Henüz görsel eklenmemiş.</p>
+    </div>`;
+    return;
+  }
+
+  // Kategori filtre butonları
+  const kategoriler = ['Tümü', ...new Set(state.galeri.map(g => g.kategori))];
+  filtreler.innerHTML = kategoriler.map(k => `
+    <button onclick="selectGaleriKategori('${k}')" id="gfiltre-${k.split(' ').join('_')}"
+      style="padding:0.4rem 1rem;border-radius:20px;border:1px solid ${state.galeriKategori===k?'var(--accent3)':'var(--border)'};
+             background:${state.galeriKategori===k?'rgba(78,205,196,0.15)':'var(--surface2)'};
+             color:${state.galeriKategori===k?'var(--accent3)':'var(--muted)'};
+             font-family:'DM Sans',sans-serif;font-size:0.82rem;font-weight:600;cursor:pointer;transition:all 0.2s;">
+      ${k}
+    </button>`).join('');
+
+  // Filtrelenmiş görseller
+  const filtered = state.galeriKategori === 'Tümü'
+    ? state.galeri
+    : state.galeri.filter(g => g.kategori === state.galeriKategori);
+
+  // Masonry grid - CSS columns ile
+  grid.style.cssText = 'columns:3;gap:1rem;column-gap:1rem;';
+  grid.innerHTML = filtered.map(g => `
+    <div style="break-inside:avoid;margin-bottom:1rem;border-radius:10px;overflow:hidden;background:var(--surface2);border:1px solid var(--border);cursor:pointer;transition:transform 0.2s,box-shadow 0.2s;"
+      onmouseover="this.style.transform='scale(1.02)';this.style.boxShadow='0 8px 30px rgba(0,0,0,0.4)'"
+      onmouseout="this.style.transform='scale(1)';this.style.boxShadow='none'">
+      <div onclick="openLightbox('${g.url}','${g.baslik||g.kategori}','${g.aciklama||''}')">
+        <img src="${g.url}" alt="${g.baslik||g.kategori}"
+          style="width:100%;display:block;object-fit:cover;"
+          onerror="this.parentElement.parentElement.style.display='none'">
+        ${g.baslik || g.aciklama ? `
+        <div style="padding:0.6rem 0.8rem;">
+          ${g.baslik ? `<div style="font-size:0.85rem;font-weight:600;color:var(--text);">${g.baslik}</div>` : ''}
+          ${g.aciklama ? `<div style="font-size:0.75rem;color:var(--muted);margin-top:0.2rem;">${g.aciklama}</div>` : ''}
+        </div>` : ''}
+      </div>
+      ${state.adminLoggedIn ? `
+      <div style="display:flex;gap:0.4rem;padding:0.4rem 0.6rem;border-top:1px solid var(--border);">
+        <button class="btn-edit" onclick="editItem('galeri','${g.id}')" style="font-size:0.72rem;padding:0.2rem 0.5rem;">Düzenle</button>
+        <button class="btn-danger" onclick="deleteItem('galeri','${g.id}')" style="font-size:0.72rem;padding:0.2rem 0.5rem;">Sil</button>
+      </div>` : ''}
+    </div>
+  `).join('');
+}
+
+function selectGaleriKategori(kat) {
+  state.galeriKategori = kat;
+  renderGaleri();
+}
+
+function openLightbox(url, baslik, aciklama) {
+  const lb = document.getElementById('lightbox');
+  document.getElementById('lightboxImg').src = url;
+  document.getElementById('lightboxCaption').textContent = [baslik, aciklama].filter(Boolean).join(' — ');
+  lb.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+
+function closeLightbox() {
+  document.getElementById('lightbox').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+// ESC tuşuyla lightbox kapat
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+
+// Galeri görsel önizleme
+function previewGaleriImage(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const preview = document.getElementById('f-gpreview');
+    const img = document.getElementById('f-gpreview-img');
+    img.src = e.target.result;
+    preview.style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+}
+
+// ===== ANA SAYFA =====
+const MOTIVASYON_SOZLERI = [
+  ["Başarı, her gün tekrarlanan küçük çabaların toplamıdır.", "Robert Collier"],
+  ["Kalite bir eylem değil, bir alışkanlıktır.", "Aristoteles"],
+  ["Birlikte gelebiliriz, birlikte kalabiliriz ve birlikte başarabiliriz.", "Henry Ford"],
+  ["Mükemmellik bir hedef değil, süregelen bir yolculuktur.", "Anonim"],
+  ["Başarının sırrı, başlamaktır.", "Mark Twain"],
+  ["İyi iş çıkarmak için iyi insan olmak gerekir.", "Anonim"],
+  ["Tek başına gidersen hızlı gidersin. Birlikte gidersen uzağa gidersin.", "Afrika Atasözü"],
+  ["Kalite pahalıya mâl olmaz, pahalıya mâl olan kalitesizliktir.", "Philip Crosby"],
+  ["Her zorluk içinde bir fırsat gizlidir.", "Albert Einstein"],
+  ["Başarmak için değil, başarana kadar çalışın.", "Anonim"],
+  ["Bir takım olarak çalışmak, sıradan insanların olağanüstü sonuçlar elde etmesini sağlar.", "Andrew Carnegie"],
+  ["Başarı tesadüf değil, hazırlık, sıkı çalışma ve hatalardan ders çıkarmanın sonucudur.", "Colin Powell"],
+  ["En iyi yatırım, kendinize yaptığınız yatırımdır.", "Warren Buffett"],
+  ["Bugün yapabileceğinizi yarına bırakmayın.", "Benjamin Franklin"],
+  ["Zorluklar, sizi durdurmak için değil; güçlendirmek için vardır.", "Anonim"],
+  ["Çalışmak, başarının en kısa yoludur.", "Anonim"],
+  ["Her büyük başarı, bir zamanlar imkânsız görünen bir hayaldi.", "Nelson Mandela"],
+  ["İşinizi seviyorsanız, hayatınızda tek bir gün bile çalışmamış olursunuz.", "Konfüçyüs"],
+  ["Kaliteyi aramak, mükemmeli bulmak demektir.", "Anonim"],
+  ["Takım ruhu olmadan takım olmaz, takım olmadan başarı olmaz.", "Anonim"],
+  ["Bugün dünden daha iyi olmak için tek bir neden yeterlidir.", "Anonim"],
+  ["Başarı, pes etmemekte yatar.", "Winston Churchill"],
+  ["Çalışkanlık, yeteneğin yerini alabilir ama tembellerin yerini alamaz.", "Anonim"],
+  ["İnsanlar birlikte çalıştığında dağlar bile yerinden oynar.", "Anonim"],
+  ["Her sabah yeni bir başlangıçtır.", "Anonim"],
+  ["Güven, her başarılı ekibin temelidir.", "Anonim"],
+  ["Azimle çalışan, er ya da geç başarıya ulaşır.", "Türk Atasözü"],
+  ["Büyük işler, büyük ekiplerle yapılır.", "Anonim"],
+  ["Kalite, bir alışkanlık haline getirilmeden sürdürülemez.", "Anonim"],
+  ["Başarı bir yolculuktur, varış noktası değil.", "Ben Sweetland"],
+  ["Güçlükler, karakteri ortaya çıkarır.", "Epiktetos"],
+  ["Sabır ve azim, tüm engelleri aşar.", "John Quincy Adams"],
+  ["İyi bir lider, ekibini başarıya taşıyan kişidir.", "Anonim"],
+  ["Dürüstlük ve çalışkanlık, başarının iki temel taşıdır.", "Anonim"],
+  ["Küçük adımlar, büyük yolculukların başlangıcıdır.", "Çin Atasözü"],
+  ["Her hata, daha iyisini yapma fırsatıdır.", "Anonim"],
+  ["Değişim kaçınılmazdır; büyüme ise bir seçimdir.", "John C. Maxwell"],
+  ["Kendinize inanın; başarının yarısı budur.", "Theodore Roosevelt"],
+  ["Zaman, en değerli varlığınızdır; iyi kullanın.", "Anonim"],
+  ["Bir toplumun gücü, bireylerinin iş birliğinden kaynaklanır.", "Anonim"],
+  ["Her günün sonu, yeni bir başlangıcın habercisidir.", "Anonim"],
+  ["Başarılı insanlar erken kalkar, çok çalışır ve geç yatar.", "Anonim"],
+  ["İyi bir iş, söz vermeden önce düşünmekle başlar.", "Anonim"],
+  ["Güçlü ekipler, farklı bakış açılarından doğar.", "Anonim"],
+  ["Çalışmanın en büyük ödülü, işin kendisidir.", "Voltaire"],
+  ["Hayatta en büyük zafer, hiç düşmemek değil, her düşüşte kalkmaktır.", "Nelson Mandela"],
+  ["Başarı, hazırlık fırsatla buluştuğunda doğar.", "Seneca"],
+  ["İnsan çalıştıkça büyür, büyüdükçe çalışır.", "Türk Atasözü"],
+  ["Bugünün çalışması, yarının başarısını inşa eder.", "Anonim"],
+  ["İşini seven, onu en iyi yapandır.", "Anonim"]
+];
+
+function initSaat() {
+  function guncelle() {
+    const now = new Date();
+    const saat = String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
+    const saniye = String(now.getSeconds()).padStart(2,'0');
+    const saatEl = document.getElementById('saatWidget');
+    if (saatEl) saatEl.textContent = saat + ':' + saniye;
+
+    const gun = now.getDay();
+    const tarihStr = now.toLocaleDateString('tr-TR', {weekday:'long', year:'numeric', month:'long', day:'numeric'});
+    const tarihEl = document.getElementById('tarihMesaji');
+    if (tarihEl) tarihEl.textContent = tarihStr;
+
+    const h = now.getHours();
+    const selamEl = document.getElementById('selamlamaMesaji');
+    if (selamEl) {
+      if (h >= 5 && h < 12) selamEl.textContent = '☀️ Günaydın!';
+      else if (h >= 12 && h < 17) selamEl.textContent = '🌤️ İyi Günler!';
+      else if (h >= 17 && h < 21) selamEl.textContent = '🌆 İyi Akşamlar!';
+      else selamEl.textContent = '🌙 İyi Geceler!';
+    }
+  }
+  guncelle();
+  setInterval(guncelle, 1000);
+}
+
+async function fetchHavaDurumu(sehir, elementId) {
+  try {
+    const apiKey = 'bd5e378503939ddaee76f12ad7a97608'; // OpenWeatherMap free API
+    const resp = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${sehir},TR&appid=${apiKey}&units=metric&lang=tr`);
+    const data = await resp.json();
+    if (data.cod !== 200) throw new Error('API hatası');
+    
+    const temp = Math.round(data.main.temp);
+    const desc = data.weather[0].description;
+    const kod = data.weather[0].id;
+    
+    // Hava durumu ikonu
+    let ikon = '🌤️';
+    if (kod >= 200 && kod < 300) ikon = '⛈️';
+    else if (kod >= 300 && kod < 400) ikon = '🌦️';
+    else if (kod >= 500 && kod < 600) ikon = '🌧️';
+    else if (kod >= 600 && kod < 700) ikon = '❄️';
+    else if (kod >= 700 && kod < 800) ikon = '🌫️';
+    else if (kod === 800) ikon = '☀️';
+    else if (kod === 801) ikon = '🌤️';
+    else if (kod > 801) ikon = '☁️';
+
+    document.getElementById(elementId + '-ikon').textContent = ikon;
+    document.getElementById(elementId + '-text').textContent = temp + '°C';
+    document.getElementById(elementId + '-desc').textContent = desc.charAt(0).toUpperCase() + desc.slice(1);
+  } catch(e) {
+    document.getElementById(elementId + '-ikon').textContent = '❓';
+    document.getElementById(elementId + '-text').textContent = '--°C';
+    document.getElementById(elementId + '-desc').textContent = 'Veri alınamadı';
+  }
+}
+
+function renderMotivasyonSoz() {
+  const bugun = new Date();
+  const indeks = (bugun.getDate() + bugun.getMonth()) % MOTIVASYON_SOZLERI.length;
+  const [soz, yazar] = MOTIVASYON_SOZLERI[indeks];
+  const sozEl = document.getElementById('motivasyonSoz');
+  const yazarEl = document.getElementById('motivasyonYazar');
+  if (sozEl) sozEl.textContent = '"' + soz + '"';
+  if (yazarEl) yazarEl.textContent = '— ' + yazar;
+}
+
+function renderAnaSayfa() {
+  renderMotivasyonSoz();
+
+  // Hava durumu
+  fetchHavaDurumu('Istanbul', 'hava-merkez');
+  fetchHavaDurumu('Akcakoca', 'hava-fabrika');
+
+  // Bugünün yemeği
+  const today = ['Pazar','Pazartesi','Salı','Çarşamba','Perşembe','Cuma','Cumartesi'][new Date().getDay()];
+  const bugunYemekler = state.meals.filter(m => m.day === today && m.imported);
+  const yemekEl = document.getElementById('widget-yemek');
+  if (yemekEl) {
+    if (bugunYemekler.length) {
+      yemekEl.innerHTML = bugunYemekler.slice(0,4).map((m,i) => 
+        `<div style="display:flex;gap:0.4rem;"><span style="color:var(--accent3);font-weight:700;">${i+1}.</span><span>${m.name}</span></div>`
+      ).join('');
+      if (bugunYemekler.length > 4) yemekEl.innerHTML += `<div style="color:var(--muted);font-size:0.78rem;">+${bugunYemekler.length-4} daha...</div>`;
+    } else {
+      yemekEl.innerHTML = '<span style="color:var(--muted);">Bugün için menü eklenmemiş.</span>';
+    }
+  }
+
+  // Doğum günleri
+  const todayStr2 = String(new Date().getDate()).padStart(2,'0') + '.' + String(new Date().getMonth()+1).padStart(2,'0');
+  const bugunDogumlar = state.birthdays.filter(b => b.date === todayStr2);
+  const upcoming7 = state.birthdays
+    .map(b => ({...b, dl: daysUntilBirthday(b.date)}))
+    .filter(b => b.dl > 0 && b.dl <= 7)
+    .sort((a,b) => a.dl - b.dl);
+  const dogumEl = document.getElementById('widget-dogum');
+  if (dogumEl) {
+    let html = '';
+    if (bugunDogumlar.length) {
+      html += bugunDogumlar.map(b => `<div style="color:var(--accent);font-weight:600;">🎉 ${b.name}</div>`).join('');
+    }
+    if (upcoming7.length) {
+      html += upcoming7.slice(0,3).map(b => `<div style="color:var(--text);">🎂 ${b.name} <span style="color:var(--accent3);font-size:0.78rem;">(${b.dl} gün)</span></div>`).join('');
+    }
+    if (!html) html = '<span style="color:var(--muted);">Yaklaşan doğum günü yok.</span>';
+    dogumEl.innerHTML = html;
+  }
+
+  // Son duyuru
+  const duyuruEl = document.getElementById('widget-duyuru');
+  if (duyuruEl) {
+    const sonDuyuru = state.announcements[0];
+    if (sonDuyuru) {
+      duyuruEl.innerHTML = `
+        <div style="font-weight:600;color:var(--text);margin-bottom:0.3rem;">${sonDuyuru.title}</div>
+        <div style="color:var(--muted);font-size:0.8rem;line-height:1.5;">${sonDuyuru.body?.substring(0,80)}${sonDuyuru.body?.length > 80 ? '...' : ''}</div>`;
+    } else {
+      duyuruEl.innerHTML = '<span style="color:var(--muted);">Henüz duyuru yok.</span>';
+    }
+  }
+
+  // Yaklaşan etkinlik
+  const etkinlikEl = document.getElementById('widget-etkinlik');
+  if (etkinlikEl) {
+    const today2 = new Date(); today2.setHours(0,0,0,0);
+    const yaklasan = state.etkinlikler
+      .filter(e => new Date(e.date+'T00:00:00') >= today2)
+      .sort((a,b) => new Date(a.date) - new Date(b.date))[0];
+    if (yaklasan) {
+      const diff = Math.round((new Date(yaklasan.date+'T00:00:00') - today2) / 86400000);
+      etkinlikEl.innerHTML = `
+        <div style="font-weight:600;color:var(--text);margin-bottom:0.3rem;">${yaklasan.title}</div>
+        <div style="color:var(--accent3);font-size:0.82rem;">📅 ${new Date(yaklasan.date+'T00:00:00').toLocaleDateString('tr-TR',{day:'numeric',month:'long'})}</div>
+        <div style="color:var(--muted);font-size:0.78rem;margin-top:0.2rem;">${diff === 0 ? 'Bugün!' : diff + ' gün sonra'}</div>`;
+    } else {
+      etkinlikEl.innerHTML = '<span style="color:var(--muted);">Yaklaşan etkinlik yok.</span>';
+    }
+  }
+
+  // Hızlı erişim - favori siteler
+  const favoriEl = document.getElementById('widget-favoriler');
+  if (favoriEl) {
+    if (state.favoriler.length) {
+      favoriEl.innerHTML = state.favoriler.slice(0,6).map(f => `
+        <a href="${f.url}" target="_blank" style="display:flex;align-items:center;gap:0.4rem;background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:0.3rem 0.8rem;text-decoration:none;transition:border-color 0.2s;"
+          onmouseover="this.style.borderColor='var(--accent3)'" onmouseout="this.style.borderColor='var(--border)'">
+          <span>${f.ikon}</span>
+          <span style="font-size:0.82rem;color:var(--text);font-weight:500;">${f.baslik}</span>
+        </a>`).join('');
+    } else {
+      favoriEl.innerHTML = '<span style="color:var(--muted);">Henüz favori site eklenmemiş.</span>';
+    }
+  }
+}
+
+// ===== INIT =====
+loadState();
+initDate();
+updateWeekBanner();
+initSaat();
+
+(async () => {
+  await loadAllData();
+  renderAnaSayfa();
+  updateNotifBadge();
+})();
+</script>
+</body>
+</html>
